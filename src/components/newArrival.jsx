@@ -1,46 +1,25 @@
-    import React from 'react';
-    import { Container, Row, Col } from 'react-bootstrap';
+    // src/components/NewArrivalSection.jsx
+    import React, { useEffect, useState } from 'react';
+    import { Container, Row, Col, Spinner } from 'react-bootstrap';
+    import axios from 'axios';
     import ProductCard from './productCard';
 
-    const products = [
-    {
-        image: '/products/headphone.png',
-        title: 'BOSO 2 Wireless On Ear Headphone',
-        price: '359.00',
-        discount: null,
-        status: 'Free Shipping · In Stock',
-    },
-    {
-        image: '/products/ipad.png',
-        title: 'QPod Pro 12.9 Inch M1 2023, 64GB + WiFi, GPS',
-        price: '569.00',
-        discount: 190,
-        status: 'Free Shipping · In Stock',
-    },
-    {
-        image: '/products/mini-pc.png',
-        title: 'uLock Mini case 2.0, 32GB / 1TB',
-        price: '1,729.00',
-        discount: 58,
-        status: 'Free Shipping · Out of Stock',
-    },
-    {
-        image: '/products/applewatch.png',
-        title: 'Apple Watch Series 6 GPS + Cellular',
-        price: '979.00',
-        discount: null,
-        status: '$2.39 Shipping · Pre Order',
-    },
-    {
-        image: '/products/charger.png',
-        title: 'iSmart 24V Charger',
-        price: '9.00',
-        discount: 3,
-        status: '$1.31 Shipping · Contact',
-    },
-    ];
-
     const NewArrivalSection = () => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/api/produk')
+        .then(res => {
+            setProducts(res.data);
+            setLoading(false);
+        })
+        .catch(err => {
+            console.error('Error fetching produk:', err);
+            setLoading(false);
+        });
+    }, []);
+
     return (
         <section className="py-5 bg-white">
         <Container fluid className="px-4 px-md-5">
@@ -48,11 +27,25 @@
             <h4 className="fw-bold">NEW ARRIVAL</h4>
             <a href="#" className="text-decoration-none fw-semibold small">View All</a>
             </div>
+            {loading ? (
+            <div className="text-center py-5">
+                <Spinner animation="border" />
+            </div>
+            ) : (
             <Row xs={1} sm={2} md={3} lg={5} className="g-4">
-            {products.map((product, idx) => (
-                <Col key={idx}><ProductCard {...product} /></Col>
-            ))}
+                {products.map((product, idx) => (
+                <Col key={idx}>
+                    <ProductCard
+                    image={`/images/${product.namaProduk.toLowerCase().replace(/\s/g, '-')}.png`}
+                    title={product.namaProduk}
+                    price={product.harga.toLocaleString('id-ID')}
+                    discount={null}
+                    status={product.status}
+                    />
+                </Col>
+                ))}
             </Row>
+            )}
         </Container>
         </section>
     );

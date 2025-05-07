@@ -1,62 +1,118 @@
     import React from 'react';
     import {
-    Navbar, Nav, Container, Form, FormControl, Button, NavDropdown, Row, Col, Badge,
+    Navbar,
+    Nav,
+    Container,
+    Form,
+    FormControl,
+    Button,
+    NavDropdown,
+    Row,
+    Col,
+    Badge
     } from 'react-bootstrap';
-    import { FaSearch, FaHeart, FaShoppingCart } from 'react-icons/fa';
+    import { FaSearch, FaHeart, FaShoppingCart, FaUserCircle } from 'react-icons/fa';
     import { Link } from 'react-router-dom';
 
-
     const Header = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+
     return (
         <>
         <Navbar bg="light" expand="lg" className="border-bottom py-3 shadow-sm">
             <Container fluid className="px-4 px-md-5">
             <Navbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2">
-            <img
+                <img
                 src="/Logo ReUseMart.png"
                 alt="ReUseMart Logo"
                 width="75"
                 height="75"
                 style={{ objectFit: 'contain' }}
-            />
-            <span className="fw-bold text-success fs-4">ReUseMart</span>
+                />
+                <span className="fw-bold text-success fs-4">ReUseMart</span>
             </Navbar.Brand>
 
             <Navbar.Toggle aria-controls="main-navbar" />
             <Navbar.Collapse id="main-navbar">
                 <Nav className="me-auto ms-5 gap-3">
-                <NavDropdown title="HOMES"><NavDropdown.Item href="#">Home 1</NavDropdown.Item></NavDropdown>
-                <NavDropdown title="PAGES"><NavDropdown.Item href="#">About</NavDropdown.Item></NavDropdown>
-                <NavDropdown title="PRODUCTS"><NavDropdown.Item href="#">All Products</NavDropdown.Item></NavDropdown>
+                <NavDropdown title="HOMES">
+                    <NavDropdown.Item href="#">Home 1</NavDropdown.Item>
+                </NavDropdown>
+                <NavDropdown title="PAGES">
+                    <NavDropdown.Item href="#">About</NavDropdown.Item>
+                </NavDropdown>
+                <NavDropdown title="PRODUCTS">
+                    <NavDropdown.Item href="#">All Products</NavDropdown.Item>
+                </NavDropdown>
                 <Nav.Link href="#">CONTACT</Nav.Link>
                 </Nav>
+
                 <Nav className="ms-auto align-items-center gap-3">
-                <Nav.Link><FaHeart className="fs-5 text-dark" /></Nav.Link>
+                {/* Hide heart icon when user is logged in */}
+                {!user && (
+                    <Nav.Link><FaHeart className="fs-5 text-dark" /></Nav.Link>
+                )}
+
                 <div className="text-end">
-                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>WELCOME</div>
+                    {user ? (
+                    <div className="d-flex align-items-center gap-3 mt-1 text-dark fw-semibold">
+                        <div className="d-flex flex-column align-items-end">
+                        <div className="text-muted" style={{ fontSize: '0.75rem' }}>WELCOME</div>
+                        <div className="d-flex align-items-center gap-2">
+                            <Button
+                            as={Link}
+                            to="/profile"
+                            variant="link"
+                            className="d-flex align-items-center gap-2 p-0 text-dark fw-semibold text-decoration-none"
+                            >
+                            <FaUserCircle className="fs-5" />
+                            <span style={{ fontSize: '0.85rem' }}>{user.name}</span>
+                            </Button>
+                            <Button
+                            variant="outline-danger"
+                            size="sm"
+                            className="fw-semibold"
+                            style={{ fontSize: '0.75rem' }}
+                            onClick={() => {
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('user');
+                                window.location.href = '/login';
+                            }}
+                            >
+                            Logout
+                            </Button>
+                        </div>
+                        </div>
+                    </div>
+                    ) : (
                     <div className="d-flex gap-2 mt-1">
-                <Button
-                    as={Link}
-                    to="/login"
-                    variant="outline-success"
-                    className="px-3 py-1 fw-semibold"
-                    style={{ fontSize: '0.85rem' }}
-                >
-                    LOG IN
-                </Button>
-                <Button
-                    as={Link}
-                    to="/register"
-                    variant="outline-success"
-                    className="px-3 py-1 fw-semibold"
-                    style={{ fontSize: '0.85rem' }}
-                >
-                    REGISTER
-                </Button>
+                        <Button
+                        as={Link}
+                        to="/login"
+                        variant="outline-success"
+                        className="px-3 py-1 fw-semibold"
+                        style={{ fontSize: '0.85rem' }}
+                        >
+                        LOG IN
+                        </Button>
+                        <Button
+                        as={Link}
+                        to="/register"
+                        variant="outline-success"
+                        className="px-3 py-1 fw-semibold"
+                        style={{ fontSize: '0.85rem' }}
+                        >
+                        REGISTER
+                        </Button>
+                    </div>
+                    )}
                 </div>
 
-                </div>
-                <Nav.Link href="#" className="position-relative d-flex align-items-center">
+                <Nav.Link
+                    as={Link}
+                    to="/cart"
+                    className="position-relative d-flex align-items-center"
+                    >
                     <FaShoppingCart className="fs-5 text-dark" />
                     <Badge pill bg="success" className="position-absolute top-0 start-100 translate-middle">5</Badge>
                     <span className="ms-2 fw-bold text-dark">$1,689.00</span>
@@ -75,8 +131,14 @@
                     <option>All Categories</option>
                     <option>Electronics</option>
                     </Form.Select>
-                    <FormControl type="text" placeholder="Search anything..." className="border-0 px-3 text-dark" />
-                    <Button variant="success" className="px-4"><FaSearch /></Button>
+                    <FormControl
+                    type="text"
+                    placeholder="Search anything..."
+                    className="border-0 px-3 text-dark"
+                    />
+                    <Button style={{ backgroundColor: 'white', color: 'black' }} className="px-4">
+                    <FaSearch />
+                    </Button>
                 </Form>
                 </Col>
                 <Col md={6}>
