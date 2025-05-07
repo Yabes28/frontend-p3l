@@ -1,79 +1,156 @@
     import React, { useEffect, useState } from 'react';
     import { useParams, useNavigate } from 'react-router-dom';
-    import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+    import {
+    Container, Row, Col, Card, Form, Button, Toast, ToastContainer,
+    } from 'react-bootstrap';
 
     const EditAddress = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [form, setForm] = useState({ label: '', firstName: '', lastName: '', phone: '', address: '' });
+    const [form, setForm] = useState({
+        namaAlamat: '',
+        alamat: '',
+        kodePos: '',
+    });
+    const [user, setUser] = useState({ name: '', no_telp: '' });
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastVariant, setToastVariant] = useState('success');
 
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem('addresses')) || [];
-        const existing = stored.find((addr) => addr.id === parseInt(id));
-        if (existing) {
-        const [first, ...rest] = existing.name.split(' ');
-        setForm({
-            label: existing.label,
-            firstName: first,
-            lastName: rest.join(' '),
-            phone: existing.phone,
-            address: existing.address,
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        // Ambil data user
+        fetch('http://localhost:8000/api/user', {
+        headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            setUser({
+            name: data.user.name,
+            no_telp: data.user.no_telp,
+            });
         });
-        }
+
+        // Ambil data alamat
+        fetch(`http://localhost:8000/api/alamat/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            setForm({
+            namaAlamat: data.namaAlamat || '',
+            alamat: data.alamat || '',
+            kodePos: data.kodePos || '',
+            });
+        });
     }, [id]);
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) =>
+        setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleSave = () => {
-        const stored = JSON.parse(localStorage.getItem('addresses')) || [];
-        const updated = stored.map((addr) =>
-            addr.id === parseInt(id)
-            ? {
-                ...addr,
-                label: form.label,
-                name: `${form.firstName} ${form.lastName}`,
-                phone: form.phone,
-                address: form.address,
-            }
-            : addr
-            );
-        localStorage.setItem('addresses', JSON.stringify(updated));
-        navigate('/myaddress');
+    const handleSave = async () => {
+        const token = localStorage.getItem('token');
+        try {
+        const response = await fetch(`http://localhost:8000/api/alamat/${id}`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+            namaAlamat: form.namaAlamat,
+            alamat: form.alamat,
+            kodePos: form.kodePos,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            setToastMessage('Alamat berhasil diperbarui');
+            setToastVariant('success');
+            setShowToast(true);
+            setTimeout(() => navigate('/myaddress'), 2000);
+        } else {
+            setToastMessage(data.message || 'Gagal memperbarui alamat');
+            setToastVariant('danger');
+            setShowToast(true);
+        }
+        } catch (err) {
+        console.error(err);
+        setToastMessage('Gagal koneksi ke server');
+        setToastVariant('danger');
+        setShowToast(true);
+        }
     };
-    
 
     return (
         <Container className="py-4">
         <Card>
-            <Card.Header>Edit Alamat</Card.Header>
+            <Card.Header className="fw-bold">Edit Alamat</Card.Header>
             <Card.Body>
             <Form>
                 <Form.Group className="mb-3">
-                <Form.Label>Nama Alamat *</Form.Label>
-                <Form.Control name="label" value={form.label} onChange={handleChange} />
+                <Form.Label>Nama Alamat (Label)</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="namaAlamat"
+                    value={form.namaAlamat}
+                    onChange={handleChange}
+                    placeholder="Contoh: Rumah, Kantor, Kosan"
+                />
                 </Form.Group>
-                <Row className="mb-3">
-                <Col>
-                    <Form.Label>First Name *</Form.Label>
-                    <Form.Control name="firstName" value={form.firstName} onChange={handleChange} />
-                </Col>
-                <Col>
-                    <Form.Label>Last Name *</Form.Label>
-                    <Form.Control name="lastName" value={form.lastName} onChange={handleChange} />
-                </Col>
-                </Row>
+
                 <Form.Group className="mb-3">
-                <Form.Label>Phone Number</Form.Label>
-                <Form.Control name="phone" value={form.phone} onChange={handleChange} />
+                <Form.Label>Nama Penerima</Form.Label>
+                <Form.Control type="text" value={user.name} readOnly />
                 </Form.Group>
+
                 <Form.Group className="mb-3">
-                <Form.Label>Address *</Form.Label>
-                <Form.Control as="textarea" name="address" value={form.address} onChange={handleChange} />
+                <Form.Label>No HP Penerima</Form.Label>
+                <Form.Control type="text" value={user.no_telp} readOnly />
                 </Form.Group>
-                <Button onClick={handleSave} variant="success">SAVE</Button>
+
+                <Form.Group className="mb-3">
+                <Form.Label>Alamat Lengkap</Form.Label>
+                <Form.Control
+                    as="textarea"
+                    name="alamat"
+                    value={form.alamat}
+                    onChange={handleChange}
+                />
+                </Form.Group>
+
+                <Form.Group className="mb-4">
+                <Form.Label>Kode Pos</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="kodePos"
+                    value={form.kodePos}
+                    onChange={handleChange}
+                />
+                </Form.Group>
+
+                <Button variant="success" onClick={handleSave}>
+                SAVE
+                </Button>
             </Form>
             </Card.Body>
         </Card>
+
+        <ToastContainer position="bottom-end" className="p-3">
+            <Toast
+            onClose={() => setShowToast(false)}
+            show={showToast}
+            delay={3000}
+            autohide
+            bg={toastVariant}
+            >
+            <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+            </Toast>
+        </ToastContainer>
         </Container>
     );
     };

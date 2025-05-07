@@ -105,23 +105,49 @@
                     <h5 className="text-success fw-bold">500</h5>
                 </Card.Body>
                 <ListGroup variant="flush">
-                    <ListGroup.Item action active className="d-flex justify-content-between align-items-center bg-success text-white border-0">
-                    Account info <FaArrowRight />
-                    </ListGroup.Item>
-                    <ListGroup.Item action className="d-flex justify-content-between align-items-center">
+                <ListGroup.Item
+                    action
+                    as={Link}
+                    to="/profile"
+                    className={`d-flex justify-content-between align-items-center ${
+                    location.pathname === "/profile" ? "bg-success text-white" : ""
+                    }`}
+                >
+                    Account Info <FaArrowRight />
+                </ListGroup.Item>
+
+                <ListGroup.Item
+                    action
+                    as={Link}
+                    to="/history"
+                    className={`d-flex justify-content-between align-items-center ${
+                    location.pathname === "/history" ? "bg-success text-white" : ""
+                    }`}
+                >
                     History <FaArrowRight />
-                    </ListGroup.Item>
-                    <ListGroup.Item
+                </ListGroup.Item>
+
+                <ListGroup.Item
+                    action
                     as={Link}
                     to="/myAddress"
-                    action
-                    className="d-flex justify-content-between align-items-center"
-                    >
+                    className={`d-flex justify-content-between align-items-center ${
+                    location.pathname === "/myAddress" ? "bg-success text-white" : ""
+                    }`}
+                >
                     My Address <FaArrowRight />
                 </ListGroup.Item>
-                    <ListGroup.Item action className="d-flex justify-content-between align-items-center">
-                    Change password <FaArrowRight />
-                    </ListGroup.Item>
+
+                <ListGroup.Item
+                    action
+                    as={Link}
+                    to="/change-password"
+                    className={`d-flex justify-content-between align-items-center ${
+                    location.pathname === "/change-password" ? "bg-success text-white" : ""
+                    }`}
+                >
+                    Change Password <FaArrowRight />
+                </ListGroup.Item>
                 </ListGroup>
                 </Card>
             </Col>
