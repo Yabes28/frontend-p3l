@@ -1,4 +1,4 @@
-    import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
     import {
     Navbar,
     Nav,
@@ -142,7 +142,16 @@
                 <Form className="d-flex bg-white rounded-3 overflow-hidden shadow-sm">
                     <Form.Select className="border-0 bg-light text-dark" style={{ maxWidth: '150px' }}>
                     <option>All Categories</option>
-                    <option>Electronics</option>
+                    <option>Elektronik & Gadget</option>
+                    <option>Pakaian & Aksesori</option>
+                    <option>Perabotan Rumah Tangga</option>
+                    <option>Buku, Alat Tulis, & Peralatan Sekolah</option>
+                    <option>Hobi, Mainan, & Koleksi</option>
+                    <option>Perlengkapan Bayi & Anak</option>
+                    <option>Otomotif & Aksesori</option>
+                    <option>Perlengkapan Taman & Outdoor</option>
+                    <option>Peralatan Kantor & Industri</option>
+                    <option>Kosmetik & Perawatan Diri </option>
                     </Form.Select>
                     <FormControl
                     type="text"

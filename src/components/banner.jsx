@@ -10,7 +10,11 @@
                 src="/banner-headphone.jpg"
                 alt="Noise Cancelling Headphone"
                 className="img-fluid w-100"
-                style={{ borderRadius: '10px' }}
+                style={{
+                height: '150px',          
+                objectFit: 'cover',       
+                borderRadius: '10px'
+                }}
             />
             </div>
         </Container>

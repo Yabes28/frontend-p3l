@@ -1,12 +1,13 @@
-    // src/components/NewArrivalSection.jsx
     import React, { useEffect, useState } from 'react';
-    import { Container, Row, Col, Spinner } from 'react-bootstrap';
+    import { Container, Row, Col, Spinner, Modal, Button } from 'react-bootstrap';
     import axios from 'axios';
     import ProductCard from './productCard';
 
     const NewArrivalSection = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost:8000/api/produk')
@@ -19,6 +20,25 @@
             setLoading(false);
         });
     }, []);
+
+    const handleCardClick = (product) => {
+        setSelectedProduct(product);
+        setShowModal(true);
+    };
+
+    const handleClose = () => {
+        setShowModal(false);
+        setSelectedProduct(null);
+    };
+
+    const checkGaransi = (garansiDate) => {
+        if (!garansiDate) return 'Tidak ada garansi';
+
+        const today = new Date();
+        const garansi = new Date(garansiDate);
+
+        return today <= garansi ? 'Masih Bergaransi' : 'Tidak Bergaransi';
+    };
 
     return (
         <section className="py-5 bg-white">
@@ -34,11 +54,11 @@
             ) : (
             <Row xs={1} sm={2} md={3} lg={5} className="g-4">
                 {products.map((product, idx) => (
-                <Col key={idx}>
+                <Col key={idx} onClick={() => handleCardClick(product)} style={{ cursor: 'pointer' }}>
                     <ProductCard
-                    image={`/images/${product.namaProduk.toLowerCase().replace(/\s/g, '-')}.png`}
+                    image={product.gambar_url}
                     title={product.namaProduk}
-                    price={product.harga.toLocaleString('id-ID')}
+                    price={product.harga}
                     discount={null}
                     status={product.status}
                     />
@@ -47,6 +67,36 @@
             </Row>
             )}
         </Container>
+
+        {/* Modal untuk detail produk */}
+        <Modal show={showModal} onHide={handleClose} centered>
+            {selectedProduct && (
+            <>
+                <Modal.Header closeButton>
+                <Modal.Title>{selectedProduct.namaProduk}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                {selectedProduct.gambar_url && (
+                    <img
+                    src={selectedProduct.gambar_url}
+                    alt={selectedProduct.namaProduk}
+                    className="img-fluid mb-3"
+                    />
+                )}
+                <p><strong>Harga:</strong> Rp {selectedProduct.harga.toLocaleString('id-ID')}</p>
+                <p><strong>Deskripsi:</strong> {selectedProduct.deskripsi}</p>
+                <p><strong>Kategori:</strong> {selectedProduct.kategori}</p>
+                <p><strong>Status Produk:</strong> {selectedProduct.status}</p>
+                <p><strong>Status Garansi:</strong> {checkGaransi(selectedProduct.garansi)}</p>
+                </Modal.Body>
+                <Modal.Footer>
+                <Button variant="success" onClick={handleClose}>
+                    Tutup
+                </Button>
+                </Modal.Footer>
+            </>
+            )}
+        </Modal>
         </section>
     );
     };
