@@ -18,7 +18,7 @@ const Register = () => {
     email: '',
     password: '',
     password_confirmation: '',
-    no_telp: '',
+    nomorHP: '',
     tipe_akun: 'pembeli',
   });
 
@@ -55,11 +55,11 @@ const Register = () => {
         email: form.email,
         password: form.password,
         password_confirmation: form.password_confirmation,
-        no_telp: form.no_telp,
+        nomorHP: form.nomorHP,
         alamat: 'alamat default',
         role: form.tipe_akun,
         tipe_akun: form.tipe_akun,
-        kontak: form.no_telp,
+        kontak: form.nomorHP,
         namaOrganisasi: form.name
       });
 
@@ -139,8 +139,8 @@ const Register = () => {
                   <Form.Label>Phone Number</Form.Label>
                   <Form.Control
                     type="text"
-                    name="no_telp"
-                    value={form.no_telp}
+                    name="nomorHP"
+                    value={form.nomorHP}
                     onChange={handleChange}
                     required
                   />

@@ -6,7 +6,8 @@
     const Profile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [form, setForm] = useState({ name: '', handle: '', email: '', no_telp: '' });
+    const [form, setForm] = useState({ name: '', email: '', no_telp: '', foto: null });
+    const [fotoPreview, setFotoPreview] = useState(null);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastVariant, setToastVariant] = useState('success');
@@ -21,8 +22,8 @@
         fetch('http://localhost:8000/api/user', {
         headers: {
             Authorization: `Bearer ${token}`,
-            'tipe-akun': tipe_akun // header khusus untuk backend
-        }
+            'tipe-akun': tipe_akun,
+        },
         })
         .then(res => res.json())
         .then(data => {
@@ -30,10 +31,11 @@
             setUser(u);
             setForm({
             name: u.name || u.nama || u.namaOrganisasi || '',
-            handle: u.handle || '',
             email: u.email || '',
             no_telp: u.no_telp || u.nomorHP || u.kontak || '',
+            foto: null
             });
+            setFotoPreview(u.foto ? `http://localhost:8000/${u.foto}` : null);
             setLoading(false);
         })
         .catch(err => {
@@ -43,20 +45,32 @@
     }, [token, tipe_akun]);
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value, files } = e.target;
+        if (name === 'foto') {
+        const file = files[0];
+        setForm({ ...form, foto: file });
+        setFotoPreview(URL.createObjectURL(file));
+        } else {
+        setForm({ ...form, [name]: value });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const data = new FormData();
+        data.append('name', form.name);
+        data.append('email', form.email);
+        data.append('no_telp', form.no_telp);
+        if (form.foto) data.append('foto', form.foto);
+
         try {
         const response = await fetch('http://localhost:8000/api/user/update', {
-            method: 'PUT',
+            method: 'POST',
             headers: {
-            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
-            'tipe-akun': tipe_akun
+            'tipe-akun': tipe_akun,
             },
-            body: JSON.stringify(form),
+            body: data,
         });
 
         const result = await response.json();
@@ -65,6 +79,8 @@
         setToastMessage('Profil berhasil diperbarui!');
         setToastVariant('success');
         setShowToast(true);
+        setUser(result.user);
+        setFotoPreview(result.user.foto ? `http://localhost:8000/${result.user.foto}` : null);
         } catch (err) {
         setToastMessage(err.message);
         setToastVariant('danger');
@@ -101,7 +117,7 @@
                 <Card className="shadow-sm border-0">
                 <Card.Body className="text-center">
                     <img
-                    src="/avatar-placeholder.png"
+                    src={fotoPreview || '/avatar-placeholder.png'}
                     alt="avatar"
                     className="rounded-circle mb-3"
                     style={{ width: '100px', height: '100px', objectFit: 'cover' }}
@@ -111,47 +127,16 @@
                     <h5 className="text-success fw-bold">500</h5>
                 </Card.Body>
                 <ListGroup variant="flush">
-                    <ListGroup.Item
-                    action
-                    as={Link}
-                    to="/profile"
-                    className={`d-flex justify-content-between align-items-center ${
-                        location.pathname === "/profile" ? "bg-success text-white" : ""
-                    }`}
-                    >
+                    <ListGroup.Item action as={Link} to="/profile" className={`d-flex justify-content-between align-items-center ${location.pathname === "/profile" ? "bg-success text-white" : ""}`}>
                     Account Info <FaArrowRight />
                     </ListGroup.Item>
-
-                    <ListGroup.Item
-                    action
-                    as={Link}
-                    to="/history"
-                    className={`d-flex justify-content-between align-items-center ${
-                        location.pathname === "/history" ? "bg-success text-white" : ""
-                    }`}
-                    >
+                    <ListGroup.Item action as={Link} to="/history" className={`d-flex justify-content-between align-items-center ${location.pathname === "/history" ? "bg-success text-white" : ""}`}>
                     History <FaArrowRight />
                     </ListGroup.Item>
-
-                    <ListGroup.Item
-                    action
-                    as={Link}
-                    to="/myAddress"
-                    className={`d-flex justify-content-between align-items-center ${
-                        location.pathname === "/myAddress" ? "bg-success text-white" : ""
-                    }`}
-                    >
+                    <ListGroup.Item action as={Link} to="/myAddress" className={`d-flex justify-content-between align-items-center ${location.pathname === "/myAddress" ? "bg-success text-white" : ""}`}>
                     My Address <FaArrowRight />
                     </ListGroup.Item>
-
-                    <ListGroup.Item
-                    action
-                    as={Link}
-                    to="/change-password"
-                    className={`d-flex justify-content-between align-items-center ${
-                        location.pathname === "/change-password" ? "bg-success text-white" : ""
-                    }`}
-                    >
+                    <ListGroup.Item action as={Link} to="/change-password" className={`d-flex justify-content-between align-items-center ${location.pathname === "/change-password" ? "bg-success text-white" : ""}`}>
                     Change Password <FaArrowRight />
                     </ListGroup.Item>
                 </ListGroup>
@@ -169,8 +154,8 @@
                         <Form.Control name="name" type="text" value={form.name} onChange={handleChange} className="rounded-3" />
                         </Col>
                         <Col md={6}>
-                        <Form.Label>Username</Form.Label>
-                        <Form.Control name="handle" type="text" value={form.handle} onChange={handleChange} className="rounded-3" />
+                        <Form.Label>Foto Profile</Form.Label>
+                        <Form.Control name="foto" type="file" onChange={handleChange} className="rounded-3" accept="image/*" />
                         </Col>
                     </Row>
                     <Row className="mb-3">
@@ -184,9 +169,7 @@
                         </Col>
                     </Row>
                     <div className="text-start mt-4">
-                        <Button variant="success" type="submit" className="px-4 py-2 fw-bold rounded-3">
-                        SAVE
-                        </Button>
+                        <Button variant="success" type="submit" className="px-4 py-2 fw-bold rounded-3">SAVE</Button>
                     </div>
                     </Form>
                 </Card.Body>

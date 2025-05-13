@@ -51,7 +51,7 @@
         <Container className="px-4 px-md-5">
             <Row className="align-items-center justify-content-between mb-4">
             <Col>
-                <h3 className="fw-bold text-success">Admin Dashboard</h3>
+                <h3 className="fw-bold text-success">Customer Service Dashboard</h3>
                 <p className="text-muted">Selamat datang, <strong>{user?.name}</strong>!</p>
             </Col>
             <Col className="text-end">

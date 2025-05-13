@@ -63,14 +63,16 @@ const Login = () => {
     setToast({ show: true, message, variant: 'success' });
 
     // Logika redirect
-    setTimeout(() => {
-      if (role === 'pegawai') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
-      window.location.reload();
-    }, 1500);
+      setTimeout(() => {
+        if (role === 'organisasi') {
+          navigate('/organisasi');
+        } else if (role === 'pegawai') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+        window.location.reload();
+      }, 1500);
 
   } catch (err) {
     const errorMsg = err.response?.data?.message || 'Login gagal.';

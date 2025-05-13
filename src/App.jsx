@@ -14,6 +14,7 @@ import Banner from './components/banner';
 import NewArrivalSection from './components/newArrival';
 import FormPenitip from './pages/FormPenitip';
 import DaftarPenitip from './pages/DaftarPenitip';
+import OrganisasiDashboard from './pages/OrganisasiDashboard';
 
 const App = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -48,6 +49,7 @@ const App = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/tambah-penitip" element={<FormPenitip />} />
         <Route path="/daftar-penitip" element={<DaftarPenitip />} />
+        <Route path="/organisasi" element={<OrganisasiDashboard />} />
       </Routes>
       {!isAdmin && <Footer />}
     </Router>
