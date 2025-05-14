@@ -124,7 +124,7 @@
                     />
                     <h6 className="fw-bold mb-1">{form.name}</h6>
                     <p className="text-muted mb-1" style={{ fontSize: '0.85rem' }}>Total Point</p>
-                    <h5 className="text-success fw-bold">500</h5>
+                    <h5 className="text-success fw-bold">{user.poinLoyalitas ?? 0}</h5>
                 </Card.Body>
                 <ListGroup variant="flush">
                     <ListGroup.Item action as={Link} to="/profile" className={`d-flex justify-content-between align-items-center ${location.pathname === "/profile" ? "bg-success text-white" : ""}`}>

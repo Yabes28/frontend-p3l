@@ -183,10 +183,7 @@ const Register = () => {
                   <Form.Label>Pilih Role</Form.Label>
                   <Form.Select name="tipe_akun" value={form.tipe_akun} onChange={handleChange}>
                     <option value="pembeli">Pembeli</option>
-                    <option value="penitip">Penitip</option>
-                    <option value="pegawai">Pegawai</option>
                     <option value="organisasi">Organisasi</option>
-                    <option value="user">User Umum</option>
                   </Form.Select>
                 </Form.Group>
 

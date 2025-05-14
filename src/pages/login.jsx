@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from 'react';
 import {
   Container,
@@ -39,7 +38,7 @@ const Login = () => {
 
     const role = res.data.role;               // contoh: "pegawai"
     const user = res.data.user;               // objek user
-    const jabatan = user.role;                // contoh: "admin"
+    const jabatan = res.data.jabatan;                // contoh: "admin"
 
     // Simpan ke localStorage
     localStorage.setItem('token', res.data.access_token);
@@ -63,24 +62,28 @@ const Login = () => {
     setToast({ show: true, message, variant: 'success' });
 
     // Logika redirect
-      setTimeout(() => {
-        if (role === 'organisasi') {
+    setTimeout(() => {
+      if (role === 'organisasi') {
           navigate('/organisasi');
-        } else if (role === 'pegawai') {
-          navigate('/admin');
-        } else {
-          navigate('/');
-        }
-        window.location.reload();
-      }, 1500);
+      // } else if (jabatan === 'admin') {
+      //     navigate('/admin');
+      // } else if (jabatan === 'cs') {
+      //     navigate('/cs');
+      // } else if (jabatan === 'kurir') {
+      //     navigate('/kurir');
+      // } else if (jabatan === 'gudang') {
+      //     navigate('/gudang');
+      } else {
+        navigate('/');
+      }
+      window.location.reload();
+    }, 1500);
 
   } catch (err) {
     const errorMsg = err.response?.data?.message || 'Login gagal.';
     setToast({ show: true, message: errorMsg, variant: 'danger' });
   }
 };
-
-
 
   return (
     <div className="bg-light py-5" style={{ minHeight: '100vh' }}>

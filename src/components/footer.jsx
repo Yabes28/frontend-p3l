@@ -1,6 +1,7 @@
     import React from 'react';
     import { Container, Row, Col } from 'react-bootstrap';
     import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaPinterest } from 'react-icons/fa';
+    import { Link } from 'react-router-dom';
 
     const Footer = () => {
     return (
@@ -24,8 +25,10 @@
                 <small>contact@reusemart.com</small>
             </Col>
             <Col md={2}>
-                <h6 className="fw-bold mb-2">COMPANY</h6>
-                <p className="mb-1">About Reusemart</p>
+                <h6 className="fw-bold mb-2">Company</h6>
+                <Link to="/about" className="text-decoration-none text-dark">
+                <   p className="mb-1">About Reusemart</p>
+                </Link>
             </Col>
             <Col md={2}>
                 <h6 className="fw-bold mb-2">HELP CENTER</h6>

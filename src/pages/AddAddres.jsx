@@ -65,11 +65,19 @@
                     <h5 className="text-success fw-bold">500</h5>
                 </Card.Body>
                 <ListGroup variant="flush">
-                    <ListGroup.Item as={Link} to="/profile">Account Info <FaArrowRight /></ListGroup.Item>
-                    <ListGroup.Item>History <FaArrowRight /></ListGroup.Item>
-                    <ListGroup.Item active>My Address <FaArrowRight /></ListGroup.Item>
-                    <ListGroup.Item>Change Password <FaArrowRight /></ListGroup.Item>
-                </ListGroup>
+                                    <ListGroup.Item action as={Link} to="/profile" className={`d-flex justify-content-between align-items-center ${location.pathname === "/profile" ? "bg-success text-white" : ""}`}>
+                                    Account Info <FaArrowRight />
+                                    </ListGroup.Item>
+                                    <ListGroup.Item action as={Link} to="/history" className={`d-flex justify-content-between align-items-center ${location.pathname === "/history" ? "bg-success text-white" : ""}`}>
+                                    History <FaArrowRight />
+                                    </ListGroup.Item>
+                                    <ListGroup.Item action as={Link} to="/myAddress" className={`d-flex justify-content-between align-items-center ${location.pathname === "/myAddress" ? "bg-success text-white" : ""}`}>
+                                    My Address <FaArrowRight />
+                                    </ListGroup.Item>
+                                    <ListGroup.Item action as={Link} to="/change-password" className={`d-flex justify-content-between align-items-center ${location.pathname === "/change-password" ? "bg-success text-white" : ""}`}>
+                                    Change Password <FaArrowRight />
+                                    </ListGroup.Item>
+                                </ListGroup>
                 </Card>
             </Col>
 
