@@ -62,7 +62,7 @@ const App = () => {
         <Route path="/pegawai" element={<PegawaiDashboard />} />
         <Route path="/tambah-pegawai" element={<FormPegawai />} />
         <Route path="/diskusi" element={<Diskusi />} />
-        <Route path="/Admin" element={<AdminDashboard />} />
+        <Route path="/CsDashboard" element={<CsDashboard />} />
 
       </Routes>
       {!isAdmin && <Footer />}

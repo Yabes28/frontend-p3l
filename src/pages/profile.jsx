@@ -40,7 +40,7 @@
         })
         .catch(err => {
             console.error('Gagal mengambil user:', err);
-            setLoading(false);
+                setLoading(false);
         });
     }, [token, tipe_akun]);
 

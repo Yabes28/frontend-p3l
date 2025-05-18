@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React, { useState } from 'react';
 import {
   Container,
@@ -65,14 +66,14 @@ const Login = () => {
     setTimeout(() => {
       if (role === 'organisasi') {
           navigate('/organisasi');
-      // } else if (jabatan === 'admin') {
-      //     navigate('/admin');
-      // } else if (jabatan === 'cs') {
-      //     navigate('/cs');
-      // } else if (jabatan === 'kurir') {
-      //     navigate('/kurir');
-      // } else if (jabatan === 'gudang') {
-      //     navigate('/gudang');
+      } else if (jabatan === 'admin') {
+          navigate('/admin');
+      } else if (jabatan === 'cs') {
+          navigate('/cs');
+      } else if (jabatan === 'kurir') {
+          navigate('/kurir');
+      } else if (jabatan === 'gudang') {
+          navigate('/gudang');
       } else {
         navigate('/');
       }
@@ -84,6 +85,8 @@ const Login = () => {
     setToast({ show: true, message: errorMsg, variant: 'danger' });
   }
 };
+
+
 
   return (
     <div className="bg-light py-5" style={{ minHeight: '100vh' }}>

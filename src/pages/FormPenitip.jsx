@@ -1,8 +1,10 @@
     import React, { useState } from 'react';
+    import { Form, Button, Container, Alert, Modal } from 'react-bootstrap';
     import axios from 'axios';
-    import { Form, Button, Container, Alert } from 'react-bootstrap';
+    import { useNavigate } from 'react-router-dom';
 
     const FormPenitip = () => {
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         nama: '',
         nik: '',
@@ -10,9 +12,10 @@
         password: '',
         nomorHP: '',
         alamat: '',
-        foto_ktp: null
+        foto_ktp: null,
     });
     const [message, setMessage] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -40,32 +43,41 @@
         const token = localStorage.getItem('token');
 
         await axios.post('http://localhost:8000/api/penitip', data, {
-        headers: {
+            headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-        }
+            'Content-Type': 'multipart/form-data',
+            },
         });
 
         setMessage('Penitip berhasil ditambahkan!');
-        setForm({
-            nama: '',
-            nik: '',
-            email: '',
-            password: '',
-            nomorHP: '',
-            alamat: '',
-            foto_ktp: null
-        });
+        setShowModal(true);
         } catch (err) {
         setMessage(err.response?.data?.message || 'Gagal menambahkan penitip.');
         }
     };
 
+    const handleTambahLagi = () => {
+        setShowModal(false);
+        setForm({
+        nama: '',
+        nik: '',
+        email: '',
+        password: '',
+        nomorHP: '',
+        alamat: '',
+        foto_ktp: null,
+        });
+    };
+
+    const handleLihatData = () => {
+        navigate('/CsDashboard');
+    };
+
     return (
-        
         <Container className="my-5">
         <h3 className="mb-4 text-success">Tambah Penitip</h3>
         {message && <Alert variant="info">{message}</Alert>}
+
         <Form onSubmit={handleSubmit} encType="multipart/form-data">
             <Form.Group className="mb-3">
             <Form.Label>Nama</Form.Label>
@@ -97,6 +109,25 @@
             </Form.Group>
             <Button type="submit" variant="success">Simpan</Button>
         </Form>
+
+        <Modal show={showModal} onHide={handleTambahLagi} centered>
+            <Modal.Header closeButton>
+            <Modal.Title>Penitip Ditambahkan</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+            <p>Data penitip berhasil ditambahkan!</p>
+            <p><strong>Nama:</strong> {form.nama}</p>
+            <p><strong>NIK:</strong> {form.nik}</p>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={handleTambahLagi}>
+                Tambah Lagi
+            </Button>
+            <Button variant="primary" onClick={handleLihatData}>
+                Lihat Semua Penitip
+            </Button>
+            </Modal.Footer>
+        </Modal>
         </Container>
     );
     };
