@@ -11,20 +11,21 @@
     const [error, setError] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-        axios
+    axios
         .get('http://localhost:8000/api/pegawai', {
-            headers: {
+        headers: {
             Authorization: `Bearer ${token}`,
-            },
+            Accept: 'application/json',
+        },
         })
         .then((res) => {
-            setPegawai(res.data);
+        setPegawai(res.data);
         })
         .catch((err) => {
-            console.error('Gagal ambil data pegawai', err);
-            setError('Gagal ambil data pegawai. Cek token atau otorisasi.');
+        console.error('Gagal ambil data pegawai', err);
+        setError('Gagal ambil data pegawai. Token mungkin tidak valid atau expired.');
         });
     }, []);
 

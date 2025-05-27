@@ -1,4 +1,3 @@
-    // CsDashboard.jsx
     import React, { useEffect, useState } from 'react';
     import { Container, Row, Col, Button, Table, Form, Alert, Modal } from 'react-bootstrap';
     import { useNavigate } from 'react-router-dom';
@@ -13,7 +12,15 @@
     const [search, setSearch] = useState('');
     const [message, setMessage] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const [editData, setEditData] = useState({ nama: '', nik: '', email: '', password: '', nomorHP: '', alamat: '', foto_ktp: null });
+    const [editData, setEditData] = useState({
+        nama: '',
+        nik: '',
+        email: '',
+        password: '',
+        nomorHP: '',
+        alamat: '',
+        foto_ktp: null
+    });
     const [selectedId, setSelectedId] = useState(null);
 
     const headers = { Authorization: `Bearer ${token}` };
@@ -90,26 +97,31 @@
     );
 
     return (
-        <div className="bg-light py-5" style={{ minHeight: '100vh' }}>
-        <Container className="px-4 px-md-5">
-            <Row className="align-items-center justify-content-between mb-4">
-            <Col>
+        <div className="bg-light" style={{ minHeight: '100vh' }}>
+        <Container fluid className="px-0">
+            <Row className="g-0">
+            {/* Sidebar */}
+            <Col md={2} className="bg-white border-end p-3 shadow-sm">
+                <h5 className="fw-bold text-success mb-4">Menu</h5>
+                <ul className="list-unstyled">
+                <li className="mb-2">
+                    <Button
+                    variant="link"
+                    className="text-start w-100 text-decoration-none fw-semibold text-dark"
+                    onClick={() => navigate('/tambah-penitip')}
+                    >
+                    ➕ Tambah Penitip
+                    </Button>
+                </li>
+                {/* Tambah menu lain jika diperlukan */}
+                </ul>
+            </Col>
+
+            {/* Main Content */}
+            <Col md={10} className="p-4">
                 <h3 className="fw-bold text-success">Customer Service Dashboard</h3>
                 <p className="text-muted">Selamat datang, <strong>{user?.name}</strong>!</p>
-            </Col>
-            <Col className="text-end">
-                <Button
-                variant="success"
-                className="fw-semibold"
-                onClick={() => navigate('/tambah-penitip')}
-                >
-                + Tambah Penitip
-                </Button>
-            </Col>
-            </Row>
 
-            <Row>
-            <Col>
                 <div className="bg-white p-4 rounded shadow-sm border">
                 <h5 className="fw-bold mb-3">Data Penitip</h5>
                 {message && <Alert variant="info">{message}</Alert>}
@@ -159,6 +171,7 @@
             </Col>
             </Row>
 
+            {/* Modal Edit */}
             <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
             <Modal.Header closeButton>
                 <Modal.Title>Edit Penitip</Modal.Title>

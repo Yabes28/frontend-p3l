@@ -65,20 +65,24 @@ const Login = () => {
     // Logika redirect
     setTimeout(() => {
       if (role === 'organisasi') {
-          navigate('/organisasi');
+        navigate('/organisasi');
       } else if (jabatan === 'admin') {
-          navigate('/admin');
+        navigate('/admin');
       } else if (jabatan === 'cs') {
-          navigate('/cs');
+        navigate('/cs');
       } else if (jabatan === 'kurir') {
-          navigate('/kurir');
+        navigate('/kurir');
       } else if (jabatan === 'gudang') {
-          navigate('/gudang');
+        navigate('/gudang');
+      } else if (role === 'penitip') {
+        navigate('/penitip');
       } else {
         navigate('/');
       }
+
       window.location.reload();
     }, 1500);
+
 
   } catch (err) {
     const errorMsg = err.response?.data?.message || 'Login gagal.';

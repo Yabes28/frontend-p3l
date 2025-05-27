@@ -21,6 +21,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import CsDashboard from './pages/CsDashboard';
 import FormPegawai from './pages/FormPegawai';
 import Diskusi from './pages/Diskusi';
+import PenitipDashboard from './pages/PenitipDashboard';
+import GudangDashboard from './pages/GudangDashboard';
 
 const App = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -63,6 +65,8 @@ const App = () => {
         <Route path="/tambah-pegawai" element={<FormPegawai />} />
         <Route path="/diskusi" element={<Diskusi />} />
         <Route path="/CsDashboard" element={<CsDashboard />} />
+        <Route path="/penitip" element={<PenitipDashboard />} />
+        <Route path="/gudang" element={<GudangDashboard />} />
 
       </Routes>
       {!isAdmin && <Footer />}
