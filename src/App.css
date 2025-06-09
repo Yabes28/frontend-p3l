@@ -40,3 +40,13 @@
 .read-the-docs {
   color: #888;
 }
+
+.hover-shadow:hover {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  transition: 0.2s ease-in-out;
+}
+
+.transition {
+  transition: all 0.2s ease;
+}
+

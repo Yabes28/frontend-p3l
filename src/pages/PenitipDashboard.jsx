@@ -198,7 +198,7 @@
                         {displayStatus === 'aktif' && new Date(item.tglSelesai) < new Date() && (
                             <Button
                             variant="warning"
-                            className="mb-2"
+                            className="mb-2"w
                             onClick={() => handlePerpanjang(item.idProduk)}
                             >
                             Perpanjang +30hr
@@ -226,6 +226,13 @@
                                 onClick={() => handleDonasikan(item.idProduk)}
                             >
                                 Donasikan
+                            </Button>
+                            <Button
+                            variant="warning"
+                            className="mb-2"
+                            onClick={() => handlePerpanjang(item.idProduk)}
+                            >
+                            Perpanjang +30hr
                             </Button>
                             </>
                         )}

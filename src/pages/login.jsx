@@ -76,7 +76,9 @@ const Login = () => {
         navigate('/gudang');
       } else if (role === 'penitip') {
         navigate('/penitip');
-      } else {
+      } else if (jabatan === 'owner') {
+        navigate('/owner');
+      }else {
         navigate('/');
       }
 

@@ -1,11 +1,17 @@
     import React, { useEffect, useState } from 'react';
     import axios from 'axios';
     import {
-    Container, Row, Col, Nav, Card, Button, Badge, Toast, ToastContainer, Modal, Table
+    Container, Row, Col, Nav, Modal, Toast, ToastContainer
     } from 'react-bootstrap';
-    import DatePicker from 'react-datepicker';
     import 'react-datepicker/dist/react-datepicker.css';
-
+    import BarangDiambil from "../components/gudang/BarangDiambil";
+    import BarangTransaksi from "../components/gudang/BarangTransaksi";
+    import NotaKurir from "../components/gudang/NotaKurir";
+    import NotaPembeli from "../components/gudang/NotaPembeli";
+    import PenjadwalanPengiriman from "../components/gudang/PenjadwalanPengiriman";
+    import JadwalList from "../components/gudang/JadwalList";
+    import PenjadwalanPengambilan from "../components/gudang/PenjadwalanPengambilan";
+    import PenitipBesar from "../components/gudang/PenitipBesar";
 
     const GudangDashboard = () => {
     const [barangs, setBarangs] = useState([]);
@@ -13,75 +19,62 @@
     const [selectedMenu, setSelectedMenu] = useState('barang-diambil');
     const [selectedItem, setSelectedItem] = useState(null);
 
+    const [transaksis, setTransaksis] = useState([]);
+    const [selectedTransaksi, setSelectedTransaksi] = useState(null);
+    const [tanggalAmbil, setTanggalAmbil] = useState('');
+    const [waktuAmbil, setWaktuAmbil] = useState('');
+    const [selectedGudang, setSelectedGudang] = useState('');
+    const [gudangList, setGudangList] = useState([]);
+
+    const [tanggalKirim, setTanggalKirim] = useState('');
+    const [selectedKurir, setSelectedKurir] = useState('');
+    const [kurirs, setKurirs] = useState([]);
+    const [valid, setValid] = useState(true);
+    const [errorMsg, setErrorMsg] = useState('');
+
+    const [jadwalList, setJadwalList] = useState([]);
+
     const token = localStorage.getItem('token');
     const headers = { Authorization: `Bearer ${token}` };
 
-    const fetchBarang = async () => {
-        try {
-        const res = await axios.get('http://localhost:8000/api/gudang-barang-diambil', { headers });
-        setBarangs(res.data);
-        } catch (error) {
-        setToast({ show: true, message: 'Gagal mengambil data barang.', variant: 'danger' });
-        }
-    };
-
-    const handleAmbil = async (idProduk) => {
-        if (!window.confirm('Yakin barang ini telah diambil oleh pemilik?')) return;
-        try {
-        await axios.put(`http://localhost:8000/api/barang-diterima/${idProduk}`, {}, { headers });
-        setToast({ show: true, message: 'Barang ditandai diambil.', variant: 'success' });
-        fetchBarang();
-        } catch {
-        setToast({ show: true, message: 'Gagal mencatat.', variant: 'danger' });
-        }
-    };
-
-    const handleShowDetail = async (barang) => {
-        try {
-        const res = await axios.get(`http://localhost:8000/api/barang/${barang.idProduk}`, { headers });
-        setSelectedItem(res.data);
-        } catch (err) {
-        console.error('Gagal ambil detail barang:', err);
-        setToast({ show: true, message: 'Gagal ambil detail barang.', variant: 'danger' });
-        }
-    };
-
     useEffect(() => {
-        if (selectedMenu === 'barang-diambil') fetchBarang();
+        if (selectedMenu === 'barang-diambil' || selectedMenu === 'barang-transaksi') {
+        const endpoint = selectedMenu === 'barang-diambil'
+            ? 'http://localhost:8000/api/gudang-barang-diambil'
+            : 'http://localhost:8000/api/transaksi-gudang';
+        axios.get(endpoint, { headers })
+            .then(res => setBarangs(Array.isArray(res.data) ? res.data : []))
+            .catch(() => setToast({ show: true, message: '❌ Gagal mengambil data barang.', variant: 'danger' }));
+        }
     }, [selectedMenu]);
 
-    const handleCetakNotaKurir = () => {
-        const element = document.getElementById('nota-kurir');
-        import('html2canvas').then(html2canvas => {
-        import('jspdf').then(({ jsPDF }) => {
-            html2canvas.default(element).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('nota-penjualan-kurir.pdf');
-            });
-        });
-        });
-    };
+    useEffect(() => {
+        if (selectedMenu === 'pengambilan') {
+        axios.get('http://localhost:8000/api/gudang-transaksis-ambil', { headers })
+            .then(res => setTransaksis(res.data));
+        axios.get('http://localhost:8000/api/gudangs', { headers })
+            .then(res => setGudangList(res.data));
+        } else if (selectedMenu === 'pengiriman') {
+        axios.get('http://localhost:8000/api/gudang-transaksis', { headers })
+            .then(res => setTransaksis(res.data));
+        axios.get('http://localhost:8000/api/kurirs', { headers })
+            .then(res => setKurirs(res.data));
+        } else if (selectedMenu === 'jadwal') {
+        axios.get('http://localhost:8000/api/penjadwalans', { headers })
+            .then(res => setJadwalList(res.data));
+        }
+    }, [selectedMenu]);
 
-    const handleCetakNotaPembeli = () => {
-        const element = document.getElementById('nota-pembeli');
-        import('html2canvas').then(html2canvas => {
-            import('jspdf').then(({ jsPDF }) => {
-            html2canvas.default(element).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF();
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save('nota-penjualan-pembeli.pdf');
-            });
-        });
-        });
+    const handleShowDetail = async (barang) => {
+        const endpoint = selectedMenu === 'barang-diambil'
+        ? `http://localhost:8000/api/barang-diambil/${barang.idProduk}`
+        : `http://localhost:8000/api/barang/${barang.idTransaksi}`;
+        try {
+        const res = await axios.get(endpoint, { headers });
+        setSelectedItem(res.data);
+        } catch {
+        setToast({ show: true, message: 'Gagal ambil detail barang.', variant: 'danger' });
+        }
     };
 
     const renderMenuItem = (key, icon, label) => (
@@ -94,453 +87,44 @@
         </Nav.Link>
     );
 
-    const [transaksis, setTransaksis] = useState([]);
-
-    const [kurirs, setKurirs] = useState([]);
-    const [selectedTransaksi, setSelectedTransaksi] = useState(null);
-    const [tanggalKirim, setTanggalKirim] = useState('');
-    const [selectedKurir, setSelectedKurir] = useState('');
-    const [valid, setValid] = useState(true);
-
-    useEffect(() => {
-    if (selectedMenu === 'pengiriman') {
-        axios.get('http://localhost:8000/api/kurirs', { headers })
-            .then(res => setKurirs(res.data))
-            .catch(err => console.error('Gagal ambil kurir:', err));
-
-        axios.get('http://localhost:8000/api/gudang-transaksis', { headers })
-            .then(res => setTransaksis(res.data))
-            .catch(err => console.error('Gagal ambil transaksi:', err));
-    }
-    }, [selectedMenu]);
-
-    const [jadwalList, setJadwalList] = useState([]);
-
-    useEffect(() => {
-    if (selectedMenu === 'jadwal') {
-        axios.get('http://localhost:8000/api/penjadwalans', { headers })
-        .then(res => setJadwalList(res.data))
-        .catch(err => console.error('Gagal ambil penjadwalan:', err));
-    }
-    }, [selectedMenu]);
-
-
-    const [errorMsg, setErrorMsg] = useState('');
-
-    const handleTanggalKirimChange = (e) => {
-    const tgl = e.target.value;
-    setTanggalKirim(tgl);
-    if (!selectedTransaksi) return;
-
-    const jam = parseInt(selectedTransaksi.jamPembelian.split(':')[0]);
-    const beli = new Date(selectedTransaksi.tanggalPembelian);
-    const kirim = new Date(tgl);
-    const sameDay = beli.toDateString() === kirim.toDateString();
-    const isInvalid = jam >= 16 && sameDay;
-    setValid(!isInvalid);
-    };
-
-    const handleKonfirmasiDiterima = async (id) => {
-        const yakin = window.confirm("Apakah pembeli sudah menerima barang ini?");
-        if (!yakin) return;
-
-        try {
-            await axios.put(`http://localhost:8000/api/penjadwalans/${id}/konfirmasi-diterima`, {}, { headers });
-            setToast({
-            show: true,
-            message: '✅ Barang berhasil diterima pembeli.',
-            variant: 'success'
-            });
-
-            const res = await axios.get('http://localhost:8000/api/penjadwalans', { headers });
-            setJadwalList(res.data);
-        } catch (err) {
-            setToast({
-            show: true,
-            message: err.response?.data?.message || '❌ Gagal konfirmasi diterima.',
-            variant: 'danger'
-            });
-        }
-        };
-
-
-
-    const handleUbahStatus = async (id) => {
-        const yakin = window.confirm("Yakin ingin menandai jadwal ini sebagai 'dikirim'?");
-        if (!yakin) return;
-
-        try {
-            await axios.put(`http://localhost:8000/api/penjadwalans/${id}/update-status`, {}, { headers });
-            setToast({
-            show: true,
-            message: '✅ Status penjadwalan berhasil diperbarui.',
-            variant: 'success'
-            });
-
-            // Refresh data jadwal
-            const res = await axios.get('http://localhost:8000/api/penjadwalans', { headers });
-            setJadwalList(res.data);
-        } catch (err) {
-            setToast({
-            show: true,
-            message: '❌ Gagal memperbarui status.',
-            variant: 'danger'
-            });
-        }
-    };
-
-    const handleSimpanJadwal = async () => {
-        const yakin = window.confirm(`Apakah Anda yakin ingin menjadwalkan pengiriman untuk ${selectedTransaksi.namaPembeli}?`);
-        if (!yakin) return;
-
-        if (!tanggalKirim) {
-            setErrorMsg('⚠️ Tanggal pengiriman harus dipilih.');
-            return;
-        }
-
-        if (!selectedKurir) {
-            setErrorMsg('⚠️ Kurir harus dipilih.');
-            return;
-        }
-
-        const jam = parseInt(selectedTransaksi.jamPembelian.split(':')[0]);
-        const beli = new Date(selectedTransaksi.tanggalPembelian);
-        const kirim = new Date(tanggalKirim);
-        const today = new Date();
-        const sameDay = beli.toDateString() === kirim.toDateString();
-        const isInvalid = jam >= 16 && sameDay;
-
-        if (isInvalid) {
-            setErrorMsg('⚠️ Tidak boleh dikirim hari yang sama karena pembelian di atas jam 4 sore.');
-            return;
-        }
-
-        if (kirim < new Date(today.setHours(0, 0, 0, 0))) {
-            setErrorMsg('⚠️ Tanggal pengiriman tidak boleh sebelum hari ini.');
-            return;
-        }
-
-        // ✅ Kirim data ke backend
-        try {
-            await axios.post('http://localhost:8000/api/penjadwalans', {
-                transaksiID: selectedTransaksi.idTransaksi,
-                pegawaiID: kurirs.find(k => k.nama === selectedKurir)?.pegawaiID || null,
-                tipe: 'pengiriman',
-                tanggal: tanggalKirim,
-                waktu: selectedTransaksi.jamPembelian
-            }, { headers });
-
-            setToast({
-                show: true,
-                message: `✅ Jadwal pengiriman berhasil disimpan untuk ${selectedKurir} pada ${tanggalKirim}`,
-                variant: 'success'
-            });
-
-            // Reset form
-            setTanggalKirim('');
-            setSelectedKurir('');
-            setSelectedTransaksi(null);
-            setErrorMsg('');
-        } catch (err) {
-            const msg = err.response?.data?.message || '❌ Gagal menyimpan jadwal.';
-            setToast({ show: true, message: msg, variant: 'danger' });
-        }
-
-        // Panggil ulang data
-        axios.get('http://localhost:8000/api/gudang-transaksis', { headers })
-        .then(res => setTransaksis(res.data));
-
-    };
-
-    const jadwalForm = () => {
-    if (!selectedTransaksi) return <p className="text-muted">Pilih salah satu transaksi.</p>;
-
-
-    return (
-        <div className="bg-white rounded p-4 shadow-sm mt-4" style={{ maxWidth: '600px' }}>
-        <h5 className="mb-3">📋 Detail Pengiriman untuk Transaksi #{selectedTransaksi.idTransaksi}</h5>
-        
-        <div className="mb-2"><strong>Nama:</strong> {selectedTransaksi.namaPembeli}</div>
-        <div className="mb-2"><strong>Tanggal Pembelian:</strong> {selectedTransaksi.tanggalPembelian}</div>
-        <div className="mb-3"><strong>Jam Pembelian:</strong> {selectedTransaksi.jamPembelian}</div>
-
-        <div className="mb-3">
-            <label className="form-label">Tanggal Pengiriman:</label>
-            <input
-            type="date"
-            className="form-control"
-            value={tanggalKirim}
-            onChange={handleTanggalKirimChange}
-            />
-            {!valid && (
-            <div className="text-danger mt-1">
-                ❌ Tidak bisa kirim hari yang sama karena pembelian di atas jam 4 sore.
-            </div>
-            )}
-        </div>
-
-        <div className="mb-3">
-            <label className="form-label">Pilih Kurir:</label>
-            <select
-            className="form-select"
-            value={selectedKurir}
-            onChange={(e) => setSelectedKurir(e.target.value)}
-            >
-            <option value="">-- Pilih Kurir --</option>
-            {kurirs.map(k => (
-                <option key={k.pegawaiID} value={k.nama}>{k.nama}</option>
-            ))}
-            </select>
-        </div>
-
-        <div className="text-end">
-            <Button
-                variant="success"
-                onClick={handleSimpanJadwal}
-                >
-                Simpan Jadwal
-            </Button>
-
-            {errorMsg && (
-            <div className="mt-2 text-danger">{errorMsg}</div>
-            )}
-        </div>
-        </div>
-    );
-    };
-
     const renderContent = () => {
         switch (selectedMenu) {
         case 'barang-diambil':
-            return (
-            <>
-                <h4 className="mb-4">Barang Menunggu dan Sudah Diambil</h4>
-                <Row>
-                {barangs.length === 0 ? (
-                    <p className="text-muted">Tidak ada barang.</p>
-                ) : (
-                    barangs.map(item => (
-                    <Col lg={4} md={6} sm={12} className="mb-4" key={item.idProduk}>
-                        <Card className="border-0 shadow-sm h-100">
-                        <Card.Img
-                            variant="top"
-                            src={item.gambar_url || 'https://via.placeholder.com/300x200'}
-                            style={{ height: '200px', objectFit: 'cover' }}
-                            onClick={() => handleShowDetail(item)}
-                        />
-                        <Card.Body className="d-flex flex-column">
-                            <Card.Title>{item.namaProduk}</Card.Title>
-                            <div className="mb-2 text-muted"><small>Penitip: {item.namaPenitip}</small></div>
-                            <div className="mb-2"><strong>Selesai:</strong> {item.tglSelesai}</div>
-                            <Badge
-                            bg={
-                                item.status === 'menunggu diambil' ? 'info' :
-                                item.status === 'diambil' ? 'secondary' : 'light'
-                            }
-                            className="mb-3"
-                            style={{ width: 'fit-content' }}
-                            >
-                            {item.status}
-                            </Badge>
-                            {item.status === 'menunggu diambil' && (
-                            <Button variant="outline-success" size="sm" onClick={() => handleAmbil(item.idProduk)}>
-                                Tandai Diambil
-                            </Button>
-                            )}
-                        </Card.Body>
-                        </Card>
-                    </Col>
-                    ))
-                )}
-                </Row>
-            </>
-            );
+            return <BarangDiambil barangs={barangs} handleAmbil={() => {}} handleShowDetail={handleShowDetail} />;
+        case 'barang-transaksi':
+            return <BarangTransaksi barangs={barangs} handleShowDetail={handleShowDetail} />;
+        case 'pengiriman':
+            return <PenjadwalanPengiriman {...{
+            transaksis, selectedTransaksi, setSelectedTransaksi,
+            tanggalKirim, setTanggalKirim,
+            selectedKurir, setSelectedKurir,
+            kurirs, valid,
+            handleTanggalKirimChange: () => {},
+            handleSimpanJadwal: () => {},
+            errorMsg
+            }} />;
+        case 'pengambilan':
+            return <PenjadwalanPengambilan {...{
+            transaksis, selectedTransaksi, setSelectedTransaksi,
+            tanggalAmbil, setTanggalAmbil,
+            waktuAmbil, setWaktuAmbil,
+            gudangList, selectedGudang, setSelectedGudang,
+            handleSimpanPengambilan: () => {},
+            errorMsg
+            }} />;
+        case 'jadwal':
+            return <JadwalList {...{
+            jadwalList,
+            handleUbahStatus: () => {},
+            handleKonfirmasiBerhasil: () => {},
+            handleKonfirmasiDiterima: () => {}
+            }} />;
         case 'nota-kurir':
-            return (
-            <div>
-                <h4 className="mb-3">Cetak Nota Penjualan (dibawa oleh kurir)</h4>
-                <div id="nota-kurir" className="p-4 bg-white rounded shadow-sm" style={{ width: '600px', fontFamily: 'Arial', fontSize: '14px' }}>
-                <h5 className="text-center mb-2">ReUse Mart</h5>
-                <p className="text-center">Jl. Green Eco Park No. 456 Yogyakarta</p>
-                <hr />
-                <p><strong>No Nota:</strong> 25.02.101</p>
-                <p><strong>Tanggal Pesan:</strong> 15/2/2025 18:50</p>
-                <p><strong>Lunas Pada:</strong> 15/2/2024 19:01</p>
-                <p><strong>Tanggal Kirim:</strong> 16/2/2024</p>
-                <p><strong>Pembeli:</strong> cath123@gmail.com / Catherine</p>
-                <p>Perumahan Griya Persada XII/20, Caturtunggal, Depok, Sleman</p>
-                <p>Delivery: Kurir ReUseMart (Cahyono)</p>
-                <hr />
-                <p>Kompor tanam 3 tungku: Rp2.000.000</p>
-                <p>Hair Dryer Ion: Rp500.000</p>
-                <p><strong>Total:</strong> Rp2.500.000</p>
-                <p>Potongan 200 poin: –Rp20.000</p>
-                <p><strong>Total Bayar:</strong> Rp2.480.000</p>
-                <p>Poin dari pesanan ini: 297</p>
-                <p>Total poin customer: 300</p>
-                <br />
-                <p><strong>QC oleh:</strong> Farida (P18)</p>
-                <p><strong>Diterima oleh:</strong> __________________________</p>
-                <p><strong>Tanggal:</strong> __________________</p>
-                </div>
-                <Button variant="primary" className="mt-3" onClick={handleCetakNotaKurir}>
-                Cetak Nota (PDF)
-                </Button>
-            </div>
-            );
+            return <NotaKurir onCetak={() => {}} />;
         case 'nota-pembeli':
-            return (
-                <div>
-                <h4 className="mb-3">Cetak Nota Penjualan (diambil oleh pembeli)</h4>
-                <div id="nota-pembeli" className="p-4 bg-white rounded shadow-sm" style={{ width: '600px', fontFamily: 'Arial', fontSize: '14px' }}>
-                    <h5 className="text-center mb-2">ReUse Mart</h5>
-                    <p className="text-center">Jl. Green Eco Park No. 456 Yogyakarta</p>
-                    <hr />
-                    <p><strong>No Nota:</strong> 24.02.101</p>
-                    <p><strong>Tanggal Pesan:</strong> 15/2/2025 18:50</p>
-                    <p><strong>Lunas Pada:</strong> 15/2/2024 19:01</p>
-                    <p><strong>Tanggal Ambil:</strong> 16/2/2024</p>
-                    <p><strong>Pembeli:</strong> cath123@gmail.com / Catherine</p>
-                    <p>Perumahan Griya Persada XII/20, Caturtunggal, Depok, Sleman</p>
-                    <p>Delivery: - (diambil sendiri)</p>
-                    <hr />
-                    <p>Kompor tanam 3 tungku: Rp2.000.000</p>
-                    <p>Hair Dryer Ion: Rp500.000</p>
-                    <p><strong>Total:</strong> Rp2.500.000</p>
-                    <p>Ongkos Kirim: Rp0</p>
-                    <p><strong>Total:</strong> Rp2.500.000</p>
-                    <p>Potongan 200 poin: –Rp20.000</p>
-                    <p><strong>Total Bayar:</strong> Rp2.480.000</p>
-                    <p>Poin dari pesanan ini: 297</p>
-                    <p>Total poin customer: 300</p>
-                    <br />
-                    <p><strong>QC oleh:</strong> Farida (P18)</p>
-                    <p><strong>Diambil oleh:</strong> __________________________</p>
-                    <p><strong>Tanggal:</strong> __________________</p>
-                </div>
-                <Button variant="primary" className="mt-3" onClick={handleCetakNotaPembeli}>
-                    Cetak Nota (PDF)
-                </Button>
-                </div>
-            );
-
-            case 'pengiriman':
-                return (
-                    <div>
-                    <h4 className="mb-3">Penjadwalan Pengiriman</h4>
-                    <Table striped bordered hover>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Pembeli</th>
-                            <th>Tanggal</th>
-                            <th>Jam</th>
-                            <th>Alamat</th>
-                            <th>Aksi</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {transaksis.length === 0 ? (
-                        <tr>
-                            <td colSpan="6" className="text-center text-muted">
-                            Tidak ada transaksi pengiriman yang sedang diproses.
-                            </td>
-                        </tr>
-                        ) : (
-                        transaksis.map((trx) => (
-                            <tr key={trx.idTransaksi}>
-                            <td>{trx.idTransaksi}</td>
-                            <td>{trx.namaPembeli}</td>
-                            <td>{trx.tanggalPembelian}</td>
-                            <td>{trx.jamPembelian}</td>
-                            <td>{trx.alamat}</td>
-                            <td>
-                                <Button size="sm" onClick={() => {
-                                setSelectedTransaksi(trx);
-                                setTanggalKirim('');
-                                setSelectedKurir('');
-                                setValid(true);
-                                }}>
-                                Jadwalkan
-                                </Button>
-                            </td>
-                            </tr>
-                        ))
-                        )}
-
-                        </tbody>
-                    </Table>
-                    {jadwalForm()}
-                    </div>
-                );
-                case 'jadwal':
-                    return (
-                        <div>
-                        <h4 className="mb-3">📅 Jadwal Pengiriman & Pengambilan</h4>
-                        <Table striped bordered hover>
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tanggal</th>
-                                <th>Waktu</th>
-                                <th>Tipe</th>
-                                <th>Status</th>
-                                <th>Kurir</th>
-                                <th>Pembeli</th>
-                                <th>Alamat</th>
-                                <th>Produk</th>
-                                <th>Diterima</th>
-
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {jadwalList.length === 0 ? (
-                                <tr><td colSpan="9" className="text-center text-muted">Belum ada jadwal.</td></tr>
-                            ) : (
-                                jadwalList.map(j => (
-                                <tr key={j.penjadwalanID}>
-                                    <td>{j.penjadwalanID}</td>
-                                    <td>{j.tanggal}</td>
-                                    <td>{j.waktu}</td>
-                                    <td>{j.tipe}</td>
-                                    <td>
-                                        {j.status === 'diproses' ? (
-                                            <Button size="sm" variant="outline-success" onClick={() => handleUbahStatus(j.penjadwalanID)}>
-                                            Tandai Dikirim
-                                            </Button>
-                                        ) : j.status === 'dikirim' ? (
-                                            <Button size="sm" variant="outline-primary" onClick={() => handleKonfirmasiBerhasil(j.penjadwalanID)}>
-                                            Berhasil Dikirim
-                                            </Button>
-                                        ) : (
-                                            <Badge bg="secondary">{j.status}</Badge>
-                                        )}
-                                        </td>
-                                    <td>{j.namaKurir}</td>
-                                    <td>{j.namaPembeli}</td>
-                                    <td>{j.alamat}</td>
-                                    <td>{j.produk.join(', ')}</td>
-                                    <td>
-                                    {j.status === 'berhasil dikirim' ? (
-                                        <Button size="sm" variant="outline-success" onClick={() => handleKonfirmasiDiterima(j.penjadwalanID)}>
-                                        Berhasil Diterima
-                                        </Button>
-                                    ) : j.status === 'selesai' ? (
-                                        <Badge bg="success">Selesai</Badge>
-                                    ) : (
-                                        <Badge bg="light" text="dark">-</Badge>
-                                    )}
-                                    </td>
-
-                                </tr>
-                                ))
-                            )}
-                            </tbody>
-                        </Table>
-                        </div>
-                    );
-
-
+            return <NotaPembeli onCetak={() => {}} />;
+        case 'penitip-besar':
+            return <PenitipBesar />;
         default:
             return <p className="text-muted">Pilih menu di sidebar.</p>;
         }
@@ -552,15 +136,14 @@
             <Col md={2} className="bg-white border-end shadow-sm min-vh-100 p-3">
             <h5 className="mb-4 text-success">Menu Gudang</h5>
             <Nav className="flex-column">
-                {renderMenuItem('barang-diambil', '📦', 'Barang Diambil')}
+                {renderMenuItem('barang-diambil', '📦', 'Barang Diambil Penitip')}
+                {renderMenuItem('barang-transaksi', '📦', 'Barang Transaksi')}
                 {renderMenuItem('pengiriman', '🚚', 'Penjadwalan Pengiriman')}
                 {renderMenuItem('pengambilan', '📥', 'Penjadwalan Pengambilan')}
                 {renderMenuItem('nota-kurir', '🧾', 'Cetak Nota (Kurir)')}
                 {renderMenuItem('nota-pembeli', '🧾', 'Cetak Nota (Pembeli)')}
-                {renderMenuItem('konfirmasi', '✅', 'Konfirmasi Diterima')}
-                {renderMenuItem('hangus', '🚫', 'Transaksi Hangus')}
                 {renderMenuItem('jadwal', '📅', 'Lihat Jadwal')}
-
+                {renderMenuItem('penitip-besar', '💰', 'Penitip Saldo Besar')}
             </Nav>
             </Col>
             <Col md={10} className="p-4 bg-light min-vh-100">
@@ -573,22 +156,7 @@
             <Modal.Title>Detail Barang</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-            {selectedItem && (
-                <>
-                <h5>{selectedItem.namaProduk}</h5>
-                <p><strong>Penitip:</strong> {selectedItem.namaPenitip || 'Tidak diketahui'}</p>
-                <p><strong>Kategori:</strong> {selectedItem.kategori || 'Tidak ada kategori'}</p>
-                <p><strong>Harga:</strong> {selectedItem.harga ? `Rp${Number(selectedItem.harga).toLocaleString()}` : 'Tidak ada harga'}</p>
-                <p><strong>Deskripsi:</strong> {selectedItem.deskripsi || 'Tidak ada deskripsi.'}</p>
-                <p><strong>Garansi:</strong> {selectedItem.garansi || 'Tidak ada garansi.'}</p>
-                <p><strong>Tanggal Mulai:</strong> {selectedItem.tglMulai}</p>
-                <p><strong>Tanggal Selesai:</strong> {selectedItem.tglSelesai}</p>
-                <Row>
-                    <Col md={6}><img src={selectedItem.gambar_url} className="img-fluid rounded" alt="Foto 1" /></Col>
-                    <Col md={6}><img src={selectedItem.gambar2_url} className="img-fluid rounded" alt="Foto 2" /></Col>
-                </Row>
-                </>
-            )}
+            {selectedItem && <div>Detail komponen ditampilkan di sini...</div>}
             </Modal.Body>
         </Modal>
 
@@ -602,3 +170,5 @@
     };
 
     export default GudangDashboard;
+
+
