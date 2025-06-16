@@ -19,7 +19,11 @@ const Register = () => {
     password: '',
     password_confirmation: '',
     nomorHP: '',
+<<<<<<< Updated upstream
     tipe_akun: 'pembeli',
+=======
+    tipe_akun: '',
+>>>>>>> Stashed changes
   });
 
   const [showToast, setShowToast] = useState(false);
@@ -29,10 +33,13 @@ const Register = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    console.log(form.tipe_akun);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(form.tipe_akun);
+    console.log(form.nomorHP);
 
     if (form.password.length < 8) {
       setToastMessage('Password minimal 8 karakter');
@@ -182,6 +189,7 @@ const Register = () => {
                 <Form.Group className="mb-4">
                   <Form.Label>Pilih Role</Form.Label>
                   <Form.Select name="tipe_akun" value={form.tipe_akun} onChange={handleChange}>
+                    <option value=""></option>
                     <option value="pembeli">Pembeli</option>
                     <option value="organisasi">Organisasi</option>
                   </Form.Select>

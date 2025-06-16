@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
     import React, { useEffect, useState } from 'react';
     import { useNavigate } from 'react-router-dom';
     import Card from 'react-bootstrap/Card';
@@ -57,3 +58,30 @@
 
     export default AdminDashboard;
         
+=======
+import { useNavigate } from 'react-router-dom';
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen gap-6 bg-gray-50">
+      <h1 className="text-2xl font-semibold text-gray-800">Pilih Tipe Data yang Ingin Ditambahkan</h1>
+      <div className="flex gap-4">
+        <Card className="p-6 flex flex-col items-center gap-4 shadow-md w-64">
+          <h2 className="text-lg font-medium text-gray-700">Tambah Pegawai</h2>
+          <Button onClick={() => navigate('/pegawai')}>Pilih</Button>
+        </Card>
+        <Card className="p-6 flex flex-col items-center gap-4 shadow-md w-64">
+          <h2 className="text-lg font-medium text-gray-700">Tambah Organisasi</h2>
+          <Button onClick={() => navigate('/organisasi')}>Pilih</Button>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;
+>>>>>>> Stashed changes

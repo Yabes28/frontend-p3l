@@ -9,10 +9,12 @@
     const navigate = useNavigate();
     const [form, setForm] = useState({
         namaAlamat: '',
+        namaPenerima: '',
+        nomorHP: '',
         alamat: '',
         kodePos: '',
     });
-    const [user, setUser] = useState({ name: '', no_telp: '' });
+    // const [user, setUser] = useState({ name: '', no_telp: '' });
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastVariant, setToastVariant] = useState('success');
@@ -22,16 +24,16 @@
         if (!token) return;
 
         // Ambil data user
-        fetch('http://localhost:8000/api/user', {
-        headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => res.json())
-        .then((data) => {
-            setUser({
-            name: data.user.name,
-            no_telp: data.user.no_telp,
-            });
-        });
+        // fetch('http://localhost:8000/api/', {
+        // headers: { Authorization: `Bearer ${token}` },
+        // })
+        // .then((res) => res.json())
+        // .then((data) => {
+        //     setUser({
+        //     name: data.user.name,
+        //     no_telp: data.user.no_telp,
+        //     });
+        // });
 
         // Ambil data alamat
         fetch(`http://localhost:8000/api/alamat/${id}`, {
@@ -41,6 +43,8 @@
         .then((data) => {
             setForm({
             namaAlamat: data.namaAlamat || '',
+            namaPenerima: data.namaPenerima || '',
+            nomorHP: data.noHpPenerima || '',
             alamat: data.alamat || '',
             kodePos: data.kodePos || '',
             });
@@ -105,12 +109,12 @@
 
                 <Form.Group className="mb-3">
                 <Form.Label>Nama Penerima</Form.Label>
-                <Form.Control type="text" value={user.name} readOnly />
+                <Form.Control type="text" value={form.namaPenerima} readOnly />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
                 <Form.Label>No HP Penerima</Form.Label>
-                <Form.Control type="text" value={user.no_telp} readOnly />
+                <Form.Control type="text" value={form.nomorHP} readOnly />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
