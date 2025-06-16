@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from 'react';
 import {
   Container,
@@ -29,105 +28,84 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await axios.post('http://localhost:8000/api/multi-login', {
-      email: form.email,
-      password: form.password
-    });
+    try {
+      const res = await axios.post('http://localhost:8000/api/multi-login', {
+        email: form.email,
+        password: form.password
+      });
 
-    const id = res.data.user.id;
-    // const pegawaiID = res.data.pegawaiID;
-    
-    const role = res.data.role;               // contoh: "pegawai"
-    const user = res.data.user;               // objek user
-<<<<<<< Updated upstream
-    const jabatan = res.data.jabatan;                // contoh: "admin"
-=======
-    const jabatan = res.data.jabatan;          // contoh: "admin"
-    const nama = res.data.user.name;   
->>>>>>> Stashed changes
+      const id = res.data.user.id;
+      const role = res.data.role;
+      const jabatan = res.data.jabatan;
+      const nama = res.data.user.name;
+      const user = res.data.user;
 
-    // Simpan ke localStorage
-    localStorage.setItem('id', id);
-    localStorage.setItem('name', nama);
-    // localStorage.setItem('pegawaiID', pegawaiID);
-    localStorage.setItem('token', res.data.access_token);
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('role', role);       // role model
-    localStorage.setItem('tipe_akun', res.data.tipe_akun);
-    localStorage.setItem('jabatan', jabatan); // role pegawai
+      localStorage.setItem('id', id);
+      localStorage.setItem('name', nama);
+      localStorage.setItem('token', res.data.access_token);
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('role', role);
+      localStorage.setItem('tipe_akun', res.data.tipe_akun);
+      localStorage.setItem('jabatan', jabatan);
 
-    // Pesan berdasarkan role model (untuk toast)
-    const roleMessage = {
-      admin: 'Selamat datang Admin!',
-      owner: 'Login Owner berhasil!',
-      pegawai: 'Halo Pegawai, selamat datang!',
-      pembeli: 'Hai Pembeli! Login berhasil!',
-      penitip: 'Selamat datang Penitip!',
-      organisasi: 'Login Organisasi berhasil!'
-    };
+      const roleMessage = {
+        admin: 'Selamat datang Admin!',
+        owner: 'Login Owner berhasil!',
+        pegawai: 'Halo Pegawai, selamat datang!',
+        pembeli: 'Hai Pembeli! Login berhasil!',
+        penitip: 'Selamat datang Penitip!',
+        organisasi: 'Login Organisasi berhasil!'
+      };
 
-    const message = roleMessage[jabatan] || 'Login berhasil!';
+      const message = roleMessage[jabatan] || roleMessage[role] || 'Login berhasil!';
+      setToast({ show: true, message, variant: 'success' });
 
-    setToast({ show: true, message, variant: 'success' });
-    console.log('Role:', role);
-    console.log('Jabatan:', jabatan);
-    console.log('id', id);
+      console.log('Role:', role);
+      console.log('Jabatan:', jabatan);
+      console.log('id:', id);
 
-
-    // Logika redirect
-    setTimeout(() => {
-<<<<<<< Updated upstream
-      if (role === 'organisasi') {
-        navigate('/organisasi');
-      } else if (jabatan === 'admin') {
-        navigate('/admin');
-      } else if (jabatan === 'cs') {
-        navigate('/cs');
-      } else if (jabatan === 'kurir') {
-        navigate('/kurir');
-      } else if (jabatan === 'gudang') {
-        navigate('/gudang');
-      } else if (role === 'penitip') {
-        navigate('/penitip');
-      } else if (jabatan === 'owner') {
-        navigate('/owner');
-      }else {
-=======
-      if (jabatan === 'admin') {
+      setTimeout(() => {
+        if (jabatan === 'admin') {
           navigate('/admin');
-      } else if (jabatan === 'cs') {
+        } else if (jabatan === 'cs') {
           navigate('/cs');
-      } else if (jabatan === 'kurir') {
+        } else if (jabatan === 'kurir') {
           navigate('/kurir');
-      } else if (jabatan === 'gudang') {
+        } else if (jabatan === 'gudang') {
           navigate('/gudang');
-      } else {
->>>>>>> Stashed changes
-        navigate('/');
-      }
+        } else if (jabatan === 'owner') {
+          navigate('/owner');
+        } else if (role === 'penitip') {
+          navigate('/penitip');
+        } else if (role === 'organisasi') {
+          navigate('/organisasi');
+        } else if (role === 'pembeli') {
+          navigate('/');
+        } else {
+          navigate('/');
+        }
 
-      window.location.reload();
-    }, 1500);
+        window.location.reload();
+      }, 1500);
 
-
-  } catch (err) {
-    const errorMsg = err.response?.data?.message || 'Login gagal.';
-    setToast({ show: true, message: errorMsg, variant: 'danger' });
-  }
-};
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || 'Login gagal.';
+      setToast({ show: true, message: errorMsg, variant: 'danger' });
+    }
+  };
 
   return (
     <div className="bg-light py-5" style={{ minHeight: '100vh' }}>
       <Container fluid className="px-3 px-md-4 px-lg-5">
         <div className="mb-4 text-muted fw-semibold">
-          <p className="mb-4 text-muted fw-semibold">
+          <p>
             <Link to="/" className="text-secondary text-decoration-none">Home</Link> /{' '}
             <span className="text-dark">Login</span>
           </p>
         </div>
+
         <Row className="align-items-center gx-4 gy-5 justify-content-between">
           <Col lg={6} className="text-center">
             <img
@@ -175,13 +153,13 @@ const Login = () => {
               <div className="d-grid mt-4">
                 <Button type="submit" variant="success" className="fw-semibold py-2">LOGIN</Button>
               </div>
+
               <div className="mt-3 text-center">
                 <small className="text-muted">
                   NEW USER?{' '}
                   <Link to="/register" className="text-success fw-semibold">
                     SIGN UP
-                  </Link>
-                  {' '}
+                  </Link>{' '}
                   <Link to="/forgot" className="text-success fw-semibold">
                     FORGOT PASSWORD
                   </Link>

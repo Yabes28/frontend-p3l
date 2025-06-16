@@ -19,11 +19,7 @@ const Register = () => {
     password: '',
     password_confirmation: '',
     nomorHP: '',
-<<<<<<< Updated upstream
-    tipe_akun: 'pembeli',
-=======
-    tipe_akun: '',
->>>>>>> Stashed changes
+    tipe_akun: 'pembeli', // ✅ default aman
   });
 
   const [showToast, setShowToast] = useState(false);
@@ -33,13 +29,10 @@ const Register = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    console.log(form.tipe_akun);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form.tipe_akun);
-    console.log(form.nomorHP);
 
     if (form.password.length < 8) {
       setToastMessage('Password minimal 8 karakter');
@@ -56,7 +49,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/multi-register', {
+      await axios.post('http://localhost:8000/api/multi-register', {
         nama: form.name,
         handle: form.handle,
         email: form.email,
@@ -188,8 +181,13 @@ const Register = () => {
 
                 <Form.Group className="mb-4">
                   <Form.Label>Pilih Role</Form.Label>
-                  <Form.Select name="tipe_akun" value={form.tipe_akun} onChange={handleChange}>
-                    <option value=""></option>
+                  <Form.Select
+                    name="tipe_akun"
+                    value={form.tipe_akun}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">-- Pilih Salah Satu --</option>
                     <option value="pembeli">Pembeli</option>
                     <option value="organisasi">Organisasi</option>
                   </Form.Select>
