@@ -3,6 +3,10 @@
     import { BarChart, CalendarX } from 'lucide-react';
     import LaporanKategori from '../components/owner/LaporanKategori';
     import LaporanPenitipanHabis from '../components/owner/LaporanPenitipanHabis';
+    import LaporanDonasiBarang from '../components/owner/LaporanDonasiBarang';
+    import LaporanRequestDonasi from '../components/owner/LaporanRequestDonasi';
+    import LaporanTransaksiPenitip from '../components/owner/LaporanTransaksiPenitip';
+    
 
     const OwnerDashboard = () => {
     const [selectedMenu, setSelectedMenu] = useState('laporan-kategori');
@@ -26,6 +30,12 @@
             return <LaporanKategori setToast={setToast} />;
         case 'laporan-habis':
             return <LaporanPenitipanHabis />;
+        case 'donasi_barang':
+            return <LaporanDonasiBarang />;
+        case 'request_barang':
+            return <LaporanRequestDonasi />;
+        case 'transaksi_penitip':
+            return <LaporanTransaksiPenitip />;
         default:
             return <p className="text-muted">Pilih menu di sidebar.</p>;
         }
@@ -49,6 +59,9 @@
             <Nav className="flex-column">
                 {renderMenuItem('laporan-kategori', <BarChart size={18} />, 'Laporan per Kategori')}
                 {renderMenuItem('laporan-habis', <CalendarX size={18} />, 'Laporan Penitipan Habis')}
+                {renderMenuItem('donasi_barang', <BarChart size={18} />, 'Laporan Donasi Barang')}
+                {renderMenuItem('request_barang', <CalendarX size={18} />, 'Laporan Request Donasi')}
+                {renderMenuItem('transaksi_penitip', <CalendarX size={18} />, 'Laporan Transaksi Penitip')}
             </Nav>
             </Col>
 
@@ -57,6 +70,9 @@
             <h3 className="fw-bold mb-4 border-bottom pb-2">
                 {selectedMenu === 'laporan-kategori' && '📊 Laporan Penjualan per Kategori'}
                 {selectedMenu === 'laporan-habis' && '📉 Laporan Penitipan Sudah Habis'}
+                {selectedMenu === 'donasi_barang' && '📊 Laporan Donasi Barang'}
+                {selectedMenu === 'request_barang' && '📉 Laporan Request Donasi'}
+                {selectedMenu === 'transaksi_penitip' && '📊 Laporan Transaksi Penitip'}
             </h3>
             {renderContent()}
             </Col>
