@@ -37,11 +37,22 @@ const Login = () => {
       password: form.password
     });
 
+    const id = res.data.user.id;
+    // const pegawaiID = res.data.pegawaiID;
+    
     const role = res.data.role;               // contoh: "pegawai"
     const user = res.data.user;               // objek user
+<<<<<<< Updated upstream
     const jabatan = res.data.jabatan;                // contoh: "admin"
+=======
+    const jabatan = res.data.jabatan;          // contoh: "admin"
+    const nama = res.data.user.name;   
+>>>>>>> Stashed changes
 
     // Simpan ke localStorage
+    localStorage.setItem('id', id);
+    localStorage.setItem('name', nama);
+    // localStorage.setItem('pegawaiID', pegawaiID);
     localStorage.setItem('token', res.data.access_token);
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('role', role);       // role model
@@ -61,9 +72,14 @@ const Login = () => {
     const message = roleMessage[jabatan] || 'Login berhasil!';
 
     setToast({ show: true, message, variant: 'success' });
+    console.log('Role:', role);
+    console.log('Jabatan:', jabatan);
+    console.log('id', id);
+
 
     // Logika redirect
     setTimeout(() => {
+<<<<<<< Updated upstream
       if (role === 'organisasi') {
         navigate('/organisasi');
       } else if (jabatan === 'admin') {
@@ -79,6 +95,17 @@ const Login = () => {
       } else if (jabatan === 'owner') {
         navigate('/owner');
       }else {
+=======
+      if (jabatan === 'admin') {
+          navigate('/admin');
+      } else if (jabatan === 'cs') {
+          navigate('/cs');
+      } else if (jabatan === 'kurir') {
+          navigate('/kurir');
+      } else if (jabatan === 'gudang') {
+          navigate('/gudang');
+      } else {
+>>>>>>> Stashed changes
         navigate('/');
       }
 
@@ -91,8 +118,6 @@ const Login = () => {
     setToast({ show: true, message: errorMsg, variant: 'danger' });
   }
 };
-
-
 
   return (
     <div className="bg-light py-5" style={{ minHeight: '100vh' }}>
@@ -155,6 +180,10 @@ const Login = () => {
                   NEW USER?{' '}
                   <Link to="/register" className="text-success fw-semibold">
                     SIGN UP
+                  </Link>
+                  {' '}
+                  <Link to="/forgot" className="text-success fw-semibold">
+                    FORGOT PASSWORD
                   </Link>
                 </small>
               </div>

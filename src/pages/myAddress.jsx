@@ -18,6 +18,7 @@
         headers: { Authorization: `Bearer ${token}` }
         })
         .then(res => {
+            console.log('Alamat dari API:', res.data);
             setAddresses(res.data);
             setLoading(false);
         })
