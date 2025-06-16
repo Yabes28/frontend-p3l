@@ -71,7 +71,7 @@
     const handleKonfirmasiDiterima = async (id) => {
         if (!window.confirm("Apakah pembeli sudah menerima barang ini?")) return;
         try {
-        await axios.put(`http://localhost:8000/api/penjadwalans/${id}/konfirmasi-diterima`, {}, { headers });
+        await axios.post(`http://localhost:8000/api/penjadwalans/${id}/konfirmasi-diterima`, {}, { headers });
         const jadwal = jadwalList.find(j => j.penjadwalanID === id);
         const transaksiID = jadwal?.transaksiID;
         if (transaksiID) {
