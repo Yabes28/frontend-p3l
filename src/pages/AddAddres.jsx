@@ -6,17 +6,25 @@
 
     const AddAddress = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState({ name: '', no_telp: '' });
+    const [user, setUser] = useState({ nama: '', id: '', nomorHP: '' });
     const [form, setForm] = useState({ label: '', alamat: '', kodePos: '' });
     const [toast, setToast] = useState({ show: false, message: '', variant: 'success' });
 
     const token = localStorage.getItem('token');
 
     useEffect(() => {
-        axios.get('http://localhost:8000/api/user', {
+        axios.get('http://localhost:8000/api/pembeli', {
         headers: { Authorization: `Bearer ${token}` },
         }).then(res => {
-        setUser(res.data.user);
+        // setUser(res.data.user || res.data);
+        // console.log('Pembeli:', res.data.user);
+        console.log('API Response:', res.data);
+        const pembeli = res.data.user || res.data;
+            setUser({
+                nama: pembeli.nama,
+                id: pembeli.pembeliID,
+                nomorHP: pembeli.nomorHP,
+            });
         }).catch(err => {
         console.error("Gagal mengambil user:", err);
         });
@@ -30,8 +38,9 @@
         try {
             await axios.post('http://localhost:8000/api/alamat', {
                 namaAlamat: form.label,
-                namaPenerima: user.name,
-                noHpPenerima: user.no_telp,
+                user_id: user.id,
+                namaPenerima: user.nama,
+                noHpPenerima: user.nomorHP,
                 alamat: form.alamat,
                 kodePos: form.kodePos,
             }, {
@@ -42,6 +51,7 @@
         
             setTimeout(() => navigate('/myaddress'), 2000);
             } catch (error) {
+                console.log('id:', user.id),
             console.error('Error simpan alamat:', error);
             setToast({ show: true, message: error.response?.data?.message || 'Gagal menyimpan', variant: 'danger' });
             }
@@ -60,7 +70,7 @@
                 <Card className="shadow-sm">
                 <Card.Body className="text-center">
                     <img src="/avatar-placeholder.png" alt="avatar" className="rounded-circle mb-3" style={{ width: '100px', height: '100px' }} />
-                    <h6 className="fw-bold mb-1">{user.name}</h6>
+                    <h6 className="fw-bold mb-1">{user?.nama}</h6>
                     <p className="text-muted mb-2">Total Point</p>
                     <h5 className="text-success fw-bold">500</h5>
                 </Card.Body>
@@ -94,11 +104,11 @@
                     <Row className="mb-3">
                         <Col md={6}>
                         <Form.Label>Nama Penerima</Form.Label>
-                        <Form.Control value={user.name} disabled />
+                        <Form.Control value={user?.nama || ''} disabled />
                         </Col>
                         <Col md={6}>
                         <Form.Label>Nomor HP</Form.Label>
-                        <Form.Control value={user.no_telp || ''} disabled />
+                        <Form.Control value={user?.nomorHP || ''} disabled />
                         </Col>
                     </Row>
 
