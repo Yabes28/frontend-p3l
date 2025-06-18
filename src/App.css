@@ -41,23 +41,12 @@
   color: #888;
 }
 
-.table {
-  width: 100%;
-  max-width: 800px;
+.hover-shadow:hover {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+  transition: 0.2s ease-in-out;
 }
-.table th, .table td {
-  text-align: center;
-  vertical-align: middle;
+
+.transition {
+  transition: all 0.2s ease;
 }
-.btn-primary {
-  margin-right: 5px;
-}
-.text-yellow-500 {
-  background-color: #f59e0b;
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-.alert-danger {
-  width: 100%;
-  max-width: 800px;
-}
+
