@@ -41,7 +41,7 @@ import React, { useEffect, useState } from 'react';
             <Container fluid className="px-4 px-md-5">
             <Navbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2">
                 <img
-                src="/Logo ReUseMart.png"
+                src="/images/reusemart-logo.png"
                 alt="ReUseMart Logo"
                 width="75"
                 height="75"
