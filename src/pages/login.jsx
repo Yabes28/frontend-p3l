@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React, { useState } from 'react';
 import {
   Container,
@@ -28,84 +29,80 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await axios.post('http://localhost:8000/api/multi-login', {
-        email: form.email,
-        password: form.password
-      });
+  try {
+    const res = await axios.post('http://localhost:8000/api/multi-login', {
+      email: form.email,
+      password: form.password
+    });
 
-      const id = res.data.user.id;
-      const role = res.data.role;
-      const jabatan = res.data.jabatan;
-      const nama = res.data.user.name;
-      const user = res.data.user;
+    const role = res.data.role;               // contoh: "pegawai"
+    const user = res.data.user;               // objek user
+    const jabatan = res.data.jabatan;                // contoh: "admin"
 
-      localStorage.setItem('id', id);
-      localStorage.setItem('name', nama);
-      localStorage.setItem('token', res.data.access_token);
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('role', role);
-      localStorage.setItem('tipe_akun', res.data.tipe_akun);
-      localStorage.setItem('jabatan', jabatan);
+    // Simpan ke localStorage
+    localStorage.setItem('token', res.data.access_token);
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('role', role);       // role model
+    localStorage.setItem('tipe_akun', res.data.tipe_akun);
+    localStorage.setItem('jabatan', jabatan); // role pegawai
 
-      const roleMessage = {
-        admin: 'Selamat datang Admin!',
-        owner: 'Login Owner berhasil!',
-        pegawai: 'Halo Pegawai, selamat datang!',
-        pembeli: 'Hai Pembeli! Login berhasil!',
-        penitip: 'Selamat datang Penitip!',
-        organisasi: 'Login Organisasi berhasil!'
-      };
+    // Pesan berdasarkan role model (untuk toast)
+    const roleMessage = {
+      admin: 'Selamat datang Admin!',
+      owner: 'Login Owner berhasil!',
+      pegawai: 'Halo Pegawai, selamat datang!',
+      pembeli: 'Hai Pembeli! Login berhasil!',
+      penitip: 'Selamat datang Penitip!',
+      organisasi: 'Login Organisasi berhasil!'
+    };
 
-      const message = roleMessage[jabatan] || roleMessage[role] || 'Login berhasil!';
-      setToast({ show: true, message, variant: 'success' });
+    const message = roleMessage[jabatan] || 'Login berhasil!';
 
-      console.log('Role:', role);
-      console.log('Jabatan:', jabatan);
-      console.log('id:', id);
+    setToast({ show: true, message, variant: 'success' });
 
-      setTimeout(() => {
-        if (jabatan === 'admin') {
-          navigate('/admin');
-        } else if (jabatan === 'cs') {
-          navigate('/cs');
-        } else if (jabatan === 'kurir') {
-          navigate('/kurir');
-        } else if (jabatan === 'gudang') {
-          navigate('/gudang');
-        } else if (jabatan === 'owner') {
-          navigate('/owner');
-        } else if (role === 'penitip') {
-          navigate('/penitip');
-        } else if (role === 'organisasi') {
-          navigate('/organisasi');
-        } else if (role === 'pembeli') {
-          navigate('/');
-        } else {
-          navigate('/');
-        }
+    // Logika redirect
+    setTimeout(() => {
+      if (role === 'organisasi') {
+        navigate('/organisasi');
+      } else if (jabatan === 'admin') {
+        navigate('/admin');
+      } else if (jabatan === 'cs') {
+        navigate('/cs');
+      } else if (jabatan === 'kurir') {
+        navigate('/kurir');
+      } else if (jabatan === 'gudang') {
+        navigate('/gudang');
+      } else if (role === 'penitip') {
+        navigate('/penitip');
+      } else if (role === 'owner') {
+        navigate('/owner');
+      } else {
+        navigate('/');
+      }
 
-        window.location.reload();
-      }, 1500);
+      window.location.reload();
+    }, 1500);
 
-    } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Login gagal.';
-      setToast({ show: true, message: errorMsg, variant: 'danger' });
-    }
-  };
+
+  } catch (err) {
+    const errorMsg = err.response?.data?.message || 'Login gagal.';
+    setToast({ show: true, message: errorMsg, variant: 'danger' });
+  }
+};
+
+
 
   return (
     <div className="bg-light py-5" style={{ minHeight: '100vh' }}>
       <Container fluid className="px-3 px-md-4 px-lg-5">
         <div className="mb-4 text-muted fw-semibold">
-          <p>
+          <p className="mb-4 text-muted fw-semibold">
             <Link to="/" className="text-secondary text-decoration-none">Home</Link> /{' '}
             <span className="text-dark">Login</span>
           </p>
         </div>
-
         <Row className="align-items-center gx-4 gy-5 justify-content-between">
           <Col lg={6} className="text-center">
             <img
@@ -153,15 +150,11 @@ const Login = () => {
               <div className="d-grid mt-4">
                 <Button type="submit" variant="success" className="fw-semibold py-2">LOGIN</Button>
               </div>
-
               <div className="mt-3 text-center">
                 <small className="text-muted">
                   NEW USER?{' '}
                   <Link to="/register" className="text-success fw-semibold">
                     SIGN UP
-                  </Link>{' '}
-                  <Link to="/forgot" className="text-success fw-semibold">
-                    FORGOT PASSWORD
                   </Link>
                 </small>
               </div>

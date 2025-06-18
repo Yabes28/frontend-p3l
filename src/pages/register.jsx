@@ -19,7 +19,7 @@ const Register = () => {
     password: '',
     password_confirmation: '',
     nomorHP: '',
-    tipe_akun: 'pembeli', // ✅ default aman
+    tipe_akun: 'pembeli',
   });
 
   const [showToast, setShowToast] = useState(false);
@@ -49,7 +49,7 @@ const Register = () => {
     }
 
     try {
-      await axios.post('http://localhost:8000/api/multi-register', {
+      const response = await axios.post('http://localhost:8000/api/multi-register', {
         nama: form.name,
         handle: form.handle,
         email: form.email,
@@ -181,13 +181,7 @@ const Register = () => {
 
                 <Form.Group className="mb-4">
                   <Form.Label>Pilih Role</Form.Label>
-                  <Form.Select
-                    name="tipe_akun"
-                    value={form.tipe_akun}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">-- Pilih Salah Satu --</option>
+                  <Form.Select name="tipe_akun" value={form.tipe_akun} onChange={handleChange}>
                     <option value="pembeli">Pembeli</option>
                     <option value="organisasi">Organisasi</option>
                   </Form.Select>
