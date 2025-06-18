@@ -1,4 +1,4 @@
-    import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
     import axios from 'axios';
     import {
     Card,
@@ -198,7 +198,7 @@
                         {displayStatus === 'aktif' && new Date(item.tglSelesai) < new Date() && (
                             <Button
                             variant="warning"
-                            className="mb-2"w
+                            className="mb-2"
                             onClick={() => handlePerpanjang(item.idProduk)}
                             >
                             Perpanjang +30hr
