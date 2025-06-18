@@ -1,6 +1,6 @@
-    import React, { useEffect, useState } from 'react';
-    import { Container, Row, Col, Button, Table, Form, Alert, Modal } from 'react-bootstrap';
-    import { useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+    import { Container, Row, Col, Button, Table, Form, Alert } from 'react-bootstrap';
+    import { useNavigate } from 'react-router-dom';
     import axios from 'axios';
 
     const PegawaiDashboard = () => {
@@ -11,22 +11,11 @@
     const [penitip, setPenitip] = useState([]);
     const [search, setSearch] = useState('');
     const [message, setMessage] = useState('');
-    const [showModal, setShowModal] = useState(false);
-    const [editData, setEditData] = useState({
-        nama: '',
-        nik: '',
-        email: '',
-        password: '',
-        nomorHP: '',
-        alamat: '',
-        foto_ktp: null
-    });
-    const [selectedId, setSelectedId] = useState(null);
 
     const getData = async () => {
         try {
         const res = await axios.get('http://localhost:8000/api/pegawai', {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: 'Bearer ${token}' }
         });
         setPenitip(res.data);
         } catch (err) {
@@ -36,67 +25,15 @@
 
     const handleDelete = async (id) => {
         if (!window.confirm('Yakin ingin menghapus pegawai ini?')) return;
+
         try {
-        await axios.delete(`http://localhost:8000/api/pegawai/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
+        await axios.delete('http://localhost:8000/api/pegawai/${id}', {
+            headers: { Authorization: 'Bearer ${token}' }
         });
         setMessage('Pegawai berhasil dihapus.');
         getData();
         } catch (err) {
         setMessage('Gagal menghapus pegawai.');
-        }
-    };
-
-    const handleResetPassword = async (id) => {
-        if (!window.confirm('Yakin ingin reset password pegawai ini?')) return;
-        try {
-        await axios.post(`http://localhost:8000/api/pegawai/${id}/reset-password`, {}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        setMessage('Berhasil reset password pegawai.');
-        getData();
-        } catch (err) {
-        setMessage('Gagal mereset password pegawai.');
-        }
-    };
-
-    const handleEdit = (item) => {
-        setEditData({
-        nama: item.nama || '',
-        email: item.email || '',
-        jabatan: item.jabatan || '',
-        tanggalLahir: item.tanggalLahir || '',
-        });
-        setSelectedId(item.pegawaiID);
-        setShowModal(true);
-    };
-
-    const handleEditChange = (e) => {
-        const { name, value } = e.target;
-        setEditData({ ...editData, [name]: value });
-    };
-
-    const handleEditSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('_method', 'PUT');
-        Object.entries(editData).forEach(([key, value]) => {
-        if (value !== '') formData.append(key, value);
-        });
-
-        try {
-        await axios.post(`http://localhost:8000/api/pegawai/${selectedId}`, formData, {
-            headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-            }
-        });
-        setMessage('Pegawai berhasil diperbarui.');
-        setShowModal(false);
-        getData();
-        } catch (err) {
-        console.error('Error saat update:', err.response);
-        setMessage(err.response?.data?.message || 'Gagal mengedit pegawai.');
         }
     };
 
@@ -156,16 +93,17 @@
                     </thead>
                     <tbody>
                     {filtered.map((item, index) => (
-                        <tr key={item.pegawaiID || index}>
+                        <tr key={item.penitipID}>
                         <td>{index + 1}</td>
                         <td>{item.nama}</td>
                         <td>{item.email}</td>
                         <td>{item.role}</td>
                         <td>{item.jabatan}</td>
+                        {/* <td>
+                            <img src={http://localhost:8000/${item.foto_ktp}} alt="KTP" width="70" />
+                        </td> */}
                         <td>
-                            <Button variant="warning" size="sm" onClick={() => handleEdit(item)}>Edit</Button>{' '}
-                            <Button variant="danger" size="sm" onClick={() => handleDelete(item.pegawaiID)}>Hapus</Button>{' '}
-                            <Button variant="info" size="sm" onClick={() => handleResetPassword(item.pegawaiID)}>Reset Password</Button>
+                            <Button variant="danger" size="sm" onClick={() => handleDelete(item.pegawaiID)}>Hapus</Button>
                         </td>
                         </tr>
                     ))}
@@ -174,55 +112,6 @@
                 </div>
             </Col>
             </Row>
-
-            <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
-            <Modal.Header closeButton>
-                <Modal.Title>Edit Pegawai</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form onSubmit={handleEditSubmit} encType="multipart/form-data">
-                <Form.Group className="mb-3">
-                    <Form.Label>Nama</Form.Label>
-                    <Form.Control
-                    name="nama"
-                    value={editData.nama}
-                    onChange={handleEditChange}
-                    required
-                    />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                    type="email"
-                    name="email"
-                    value={editData.email}
-                    onChange={handleEditChange}
-                    required
-                    />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Jabatan</Form.Label>
-                    <Form.Control
-                    name="jabatan"
-                    value={editData.jabatan}
-                    onChange={handleEditChange}
-                    required
-                    />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Tanggal Lahir</Form.Label>
-                    <Form.Control
-                    type="date"
-                    name="tanggalLahir"
-                    value={editData.tanggalLahir}
-                    onChange={handleEditChange}
-                    required
-                    />
-                </Form.Group>
-                <Button type="submit" variant="success">Simpan Perubahan</Button>
-                </Form>
-            </Modal.Body>
-            </Modal>
         </Container>
         </div>
     );
